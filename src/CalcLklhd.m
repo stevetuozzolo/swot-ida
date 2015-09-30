@@ -1,4 +1,4 @@
-function [f,dQdxv,dAdtv,Cq,Cf]=CalcLklhd(Obs,A0,n,D,Prior,Delta,DeltaA,B,qhatv)
+function [f,dQdxv,dAdtv,Cf,Qv]=CalcLklhd(Obs,A0,n,D,Prior,Delta,DeltaA,B,qhatv)
 
 %All vectors ordered "space-first"
 % theta(1)=theta(r1,t1)
