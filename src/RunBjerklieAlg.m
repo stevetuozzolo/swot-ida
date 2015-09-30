@@ -4,6 +4,8 @@ ManningFunc=@(p,x) (1./x(:,1).* ( (x(:,2)-p).*x(:,3) ).^(5/3) .* x(:,4) .* x(:,5
 ManningAvgFunc=@(p,x) (mean( 1./x(:,1).* ( (x(:,2)-p).*x(:,3) ).^(5/3) .* x(:,4) .* x(:,5).^(1/2)  )  );
 H0g=0;
 
+Obs.S(Obs.S<0)=0;
+
 for r=1:D.nR,
     Sa=mean(Obs.S(r,:));
 
