@@ -66,6 +66,7 @@ Qbar=squeeze(mean(mean(C.thetaQ)));
 
 figure(5)
 plot(Qbar); grid on;
+set(gca,'FontSize',14)
 xlabel('Iteration')
 ylabel('Discharge, m^3/s')
 
