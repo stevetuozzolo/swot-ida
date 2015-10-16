@@ -1,4 +1,4 @@
-function MakeFigs (D,Truth,Prior,C,E,Err)
+function MakeFigs (D,Truth,Prior,C,E,Err,AllTruth,DAll)
 
 figure(1)
 if C.Estimateq,
@@ -43,6 +43,10 @@ for i=1:D.nR,
 end
 
 figure(4)
+if isnan(Truth.n),
+    Truth.n=nan(size(Truth.A0));
+end
+    
 for i=1:D.nR,
     subplot(1,D.nR,i)
     x=linspace(0,max(C.thetan(i,:)),100);
@@ -62,17 +66,22 @@ Qbar=squeeze(mean(mean(C.thetaQ)));
 
 figure(5)
 plot(Qbar); grid on;
+set(gca,'FontSize',14)
+xlabel('Iteration')
+ylabel('Discharge, m^3/s')
+
+hold on;
+plot([1 C.N],mean(mean(Truth.Q))*ones(2,1));
+hold off;
 
 
 figure(6)
-h=plot(D.t,E.QhatPostf',D.t,Truth.Q,'--','LineWidth',2); 
-Co=get(0,'DefaultAxesColorOrder');
-for i=1:D.nR,
-    set(h(D.nR+i),'Color',Co(i,:));
-end
+h=plot(D.t,Truth.Q,D.t,E.QhatPostf','LineWidth',2); 
+set(h(1:D.nR),'Color','b');  set(h(D.nR+1:end),'Color','r');
 set(gca,'FontSize',14)
 xlabel('Time, days')
 ylabel('Discharge, m^3/s')
+legend(h([1 end]),'True','MetroMan')
 
 figure(7)
 plot(1:D.nR,Err.QRelErrPrior,'.-',1:D.nR,Err.QRelErrPost,'.-');
@@ -86,16 +95,13 @@ xlabel('Average discharge, m^3/s')
 ylabel('Log of likelihood')
 
 
-% figure(7)
-% plot(mean(C.thetaA0(:,C.Nburn+1:end)),C.LogLike(C.Nburn+1:end),'o'); hold on;
-% plot(mean(Truth.A0)*ones(2,1),get(gca,'YLim'),'r-'); hold off;
-% 
-% figure(8)
-% plot(mean(C.thetan(:,C.Nburn+1:end)),C.LogLike(C.Nburn+1:end),'o'); hold on;
-% plot(mean(Truth.n)*ones(2,1),get(gca,'YLim'),'r-'); hold off;
-% 
-% figure(9)
-% plot(1:C.N,C.LogLike)
-
+figure(9)
+plot(DAll.t,mean(AllTruth.Q,1),DAll.t,mean(E.AllQ,1),DAll.t,mean(E.QhatAllPrior,1),'LineWidth',2)
+set(gca,'FontSize',14)
+ylabel('Discharge, m^3/s')
+legend('True','Estimate')
+if DAll.t(1) > datenum(1900,0,0,0,0,0),
+    datetick('x','mmm-dd-hh:MM','keepticks')
+end
 
 return
