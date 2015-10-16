@@ -1,47 +1,26 @@
-function [Err]=CalcErrorStats (Truth,Prior,E)
+function [Err]=CalcErrorStats (AllTruth,E,DAll)
 
-%Quick Error stats
-Err.RelErrA0=mean(E.A0hat'-Truth.A0)./mean(Truth.A0);
-Err.RelErrN=mean(E.nhat'-Truth.n')./mean(Truth.n);
-RMSq=sqrt(mean( (E.qhat-Truth.q).^2 ));
-RMSqPrior=sqrt(mean( (Prior.meanq-Truth.q).^2 ));
+%based on Analysis/SWOT/Discharge/Pepsi Challenge/src/CalcErrorStats
+Qt=mean(AllTruth.Q,1);
+QhatAvg=mean(E.AllQ,1);
 
-disp(['Relative Error in A0:' num2str(Err.RelErrA0)])
-disp(['Relative Uncertainty in A0: ' num2str(mean(E.stdA0Post'./E.A0hat'))])
+Stats.RMSE=sqrt(mean( (Qt-QhatAvg).^2 ) );
+Stats.rRMSE=sqrt(mean( (  (Qt-QhatAvg)./Qt   ).^2 ) );
 
-disp(['Relative Error in n:' num2str(Err.RelErrN)])
-disp(['Relative Uncertainty in n: ' num2str(mean(E.stdnPost'./E.nhat'))])
+r=QhatAvg-Qt;
+logr=log(QhatAvg)-log(Qt);
 
-disp(['RMS for q posterior:' num2str(RMSq)])
-disp(['Relative Uncertainty in q: ' num2str(mean(E.stdqpost./E.qhat))])
+Stats.MSC=log(  sum((Qt-mean(Qt)).^2)/sum(r.^2) -2*2/DAll.nt  );
+Stats.bias=mean(r);
+Stats.stdresid=std(r);
+Stats.meanLogRes=mean(logr);
+Stats.stdLogRes=std(logr);
+Stats.meanRelRes=mean(r./Qt);
+Stats.stdRelRes=std(r./Qt);
 
-RMSQPost=sqrt(mean( (E.QhatPostf'-Truth.Q').^2 ));
-RMSQPrior=sqrt(mean( (E.QhatPrior'-Truth.Q').^2 ));
-ratio=((RMSQPrior-RMSQPost)./RMSQPrior)*100;
+Stats.Qbart=mean(Qt);
 
-nR=length(E.A0hat);
-
-fprintf('RMS for Q prior: ');
-for i=1:nR,
-    fprintf('%.1f,', RMSQPrior(i))
-end
-fprintf('\n');
-
-fprintf('RMS for Q posterior: ')
-for i=1:nR,
-    fprintf('%.1f, ', RMSQPost(i))
-end
-
-fprintf('\n')
-
-Err.QRelErrPrior=RMSQPrior./mean(Truth.Q');
-Err.QRelErrPost=RMSQPost./mean(Truth.Q');
-
-fprintf('Average RMS for Q posterior: %.3f\n', mean(Err.QRelErrPost))
-
-fprintf('Average relative Q uncertainty: %.3f\n', ...
-    mean(mean(E.QstdPost./E.QhatPost)) )
-
-fprintf('\n')
+%Copy to error struct
+Err.Stats=Stats;
 
 return

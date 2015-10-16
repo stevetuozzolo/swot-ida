@@ -1,4 +1,4 @@
-function [Delta,DeltaA,B,C,thetauA0,thetaun,thetauq,R] = ...
+function [Delta,DeltaA,B,C,thetauA0,thetaun,thetauq,thetauQbar,R] = ...
                InitializeMetropolis (D,C,P,R)
 
 Delta = CalcDelta(D.nR,D.nt,D.L);
@@ -18,10 +18,13 @@ C.thetaq=nan(D.nR*(D.nt-1),C.N);
 C.thetaq(:,1)=P.meanq;
 thetauq=C.thetaq(:,1);
 
+C.thetaQbar=nan(1,C.N);
+C.thetaQbar(:,1)=P.meanQbar*ones(1,1);
+thetauQbar=C.thetaQbar(:,1);
 
 %Get Random numbers
 rng(R.Seed)
-R.z1=randn(D.nR,C.N); 
+R.z1=randn(1,C.N);  %for Qbar
 R.z2=randn(D.nR,C.N);
 R.z3=randn(D.nR*(D.nt-1),C.N);
 
