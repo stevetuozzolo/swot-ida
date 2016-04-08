@@ -21,7 +21,7 @@ AllTruth=ReadTruth (TruthFile,DAll);
 [Obs] = CalcdA(D,Obs);
 [AllObs] = CalcdA(DAll,AllObs);
 
-[Prior,jmp,AllObs]=ProcessPrior(Prior,Obs,D,AllObs,jmp,DAll); 
+[Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,jmp,DAll,Obs,D); 
 
 [Obs,Prior] = GetCovMats(D,Obs,Prior);
 

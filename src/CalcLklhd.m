@@ -43,10 +43,10 @@ J=[JS JdA Jw];
 CdQ=J*Obs.CSdAw*J';
 
 % %2.1.4) Calculate error covariance due to Manning's error
-CdQm=Delta*(eye(M).*Prior.eQm^2)*Delta';
+% CdQm=Delta*(eye(M).*Prior.eQm^2)*Delta'; 
 
 %2.3) Final covariance matrix calculation
-Cf=Obs.CA+CdQ+Prior.Cqf+CdQm;
+Cf=Obs.CA+CdQ+Prior.Cqf; %+CdQm;
 
 %3) Calculate likelihood
 Theta=dQdxv+dAdtv-qhatv;
