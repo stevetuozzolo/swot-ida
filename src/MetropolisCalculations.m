@@ -75,6 +75,7 @@ for i=1:C.N,
     C.LogLike(i)=fu;
 end
 
+disp(['Elapsed time: ' num2str(toc) ' seconds.'])
 
 disp(['A0: Acceptance rate =' num2str(C.n_a1/C.N*100) ' pct.'])
 disp(['n: Acceptance rate =' num2str(C.n_a2/C.N*100) ' pct.'])

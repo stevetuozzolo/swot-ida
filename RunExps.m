@@ -4,6 +4,7 @@ uselib('SWOTQAlg')
 
 ShowFigs=true;
 RunBjerklie=false;
+ReRunPrior=true;
 RunMetroMan=true;
 
 fid=fopen('RunFile.txt');
@@ -14,7 +15,7 @@ while ~feof(fid),
        continue
    end
    if RunMetroMan,
-       RunExp(RunName,ShowFigs);
+       RunExp(RunName,ShowFigs,ReRunPrior);
    end
    if RunBjerklie,
        RunBjerklieExp(RunName,ShowFigs)

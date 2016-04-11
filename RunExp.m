@@ -1,7 +1,6 @@
 % this script runs a single experiment, taking Run Directory as input
-% April 2015
 
-function RunExp(RunDir,ShowFigs)
+function RunExp(RunDir,ShowFigs,ReRunPrior)
 
 % RunDir='.';
 
@@ -21,7 +20,12 @@ AllTruth=ReadTruth (TruthFile,DAll);
 [Obs] = CalcdA(D,Obs);
 [AllObs] = CalcdA(DAll,AllObs);
 
-[Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,jmp,DAll,Obs,D); 
+if ReRunPrior,
+    [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,jmp,DAll,Obs,D); 
+    save([ RunDir '/Prior.mat'],'Prior','jmp','AllObs');
+else    
+    load([ RunDir '/Prior.mat'],'Prior','jmp','AllObs');
+end
 
 [Obs,Prior] = GetCovMats(D,Obs,Prior);
 
