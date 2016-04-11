@@ -1,7 +1,7 @@
 Chain length
-1000
+10000
 Burn in
-200
+2000
 Random Number Seed
 9
 Estimate lateral inflows (true or false) <- use "true" at your own risk
@@ -23,11 +23,11 @@ Prior on lateral inflows m2/s (Use 0; if -1 then estimated from channel mass bal
 Standard deviation on lateral inflows m2/s
 0
 Jump standard deviation for  A0 [m2]
-200
+60
 Jump spatial correlation for A0 among reaches [m2]
 0.7
 Jump standard deviation for roughness coefficient 
-.01
+.0003
 Jump standard deviation for lateral inflows m2/s
 1E-5
 Minimum value for lateral inflows m2/s
