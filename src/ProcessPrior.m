@@ -134,8 +134,8 @@ iUse=N/5*4+1:N;
 %% 4 posterior Q estimation
 Prior.meanA0=mean(thetaA0(:,iUse),2);
 Prior.stdA0=std(thetaA0(:,iUse),[],2);
-Prior.meann=mean(thetan(:,iUse),2);
-Prior.stdn=mean(thetan(:,iUse),2);
+Prior.meann=mean(thetan(:,iUse),2);  %should check these parameters actually fit the posterior...
+Prior.stdn=std(thetan(:,iUse),[],2);
 
 %% 5 
 
