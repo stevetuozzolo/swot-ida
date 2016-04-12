@@ -4,7 +4,7 @@ uselib('SWOTQAlg')
 
 ShowFigs=true;
 RunBjerklie=false;
-ReRunPrior=true;
+ReRunPrior=true; %need to re-run every time jump params change!
 RunMetroMan=true;
 
 fid=fopen('RunFile.txt');
