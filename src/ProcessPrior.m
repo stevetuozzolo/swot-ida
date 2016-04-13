@@ -1,4 +1,4 @@
-function [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,jmp,DAll,Obs,D)
+function [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,jmp,DAll,Obs,D,ShowFigs)
 
 N=1E4;
 
@@ -129,13 +129,57 @@ if min(na1)/N < 0.2 || min(na2)/N < 0.2 || max(na1)/N > 0.8 || max(na2)/N > 0.8
     clear Prior
 end
 
-iUse=N/5*4+1:N;
+iUse=N/5+1:N;
 
 %% 4 posterior Q estimation
 Prior.meanA0=mean(thetaA0(:,iUse),2);
 Prior.stdA0=std(thetaA0(:,iUse),[],2);
 Prior.meann=mean(thetan(:,iUse),2);  %should check these parameters actually fit the posterior...
 Prior.stdn=std(thetan(:,iUse),[],2);
+
+if ShowFigs,
+
+    %check validity of the n parameterization ...
+    r=3; %reach to check out.
+
+    meann=Prior.meann(r);
+    covn=Prior.stdn(r)./meann;
+    v=(covn.*meann).^2;
+    [mun,sigman] = logninvstat(meann,v);
+
+    Nuse=length(iUse);
+    figure(11)
+    [rHistn.N,rHistn.nc]=hist(thetan(r,iUse),35);
+    xval=linspace(0.9*min(rHistn.nc),1.1*max(rHistn.nc),100);
+    yval=lognpdf(xval,mun,sigman);
+
+    h=plotyy(rHistn.nc,rHistn.N,xval,yval);
+    set(gca,'FontSize',14)
+    ylabel(h(1),'Histogram of the posterior')
+    ylabel(h(2),'Probability')
+    xlabel('Roughness coefficient, n, [-]')
+    title(['Reach #' num2str(r) ' for n'])
+
+    %check validity of the A0 parameterization ...
+    r=2; %reach to check out.
+
+    meanA0=Prior.meanA0(r);
+    covA0=Prior.stdA0(r)./meanA0;
+    v=(covA0.*meanA0).^2;
+    [muA0,sigmaA0] = logninvstat(meanA0,v);
+
+    figure(12)
+    [rHistA0.N,rHistA0.A0c]=hist(thetaA0(r,iUse),35);
+    xval=linspace(0.9*min(rHistA0.A0c),1.1*max(rHistA0.A0c),100);
+    yval=lognpdf(xval,muA0,sigmaA0);
+
+    h=plotyy(rHistA0.A0c,rHistA0.N,xval,yval);
+    set(gca,'FontSize',14)
+    ylabel(h(1),'Histogram of the posterior')
+    ylabel(h(2),'Probability')
+    xlabel('A_0, m^2')
+    title(['Reach #' num2str(r) ' for A0'])
+end
 
 %% 5 
 
