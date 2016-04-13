@@ -5,12 +5,18 @@ function [C] = MetropolisCalculations(Prior,D,Obs,jmp,C,R,DAll,AllObs)
 % log-normal probabilty calculations
 meann=Prior.meann;
 covn=Prior.stdn./meann;
-v=(covn.*meann).^2;
-[mun,sigman] = logninvstat(meann,v);
+vn=(covn.*meann).^2;
+[mun,sigman] = logninvstat(meann,vn);
+
+meanA0=Prior.meanA0;
+covA0=Prior.stdA0./meanA0;
+vA0=(covA0.*meanA0).^2;
+[muA0,sigmaA0] = logninvstat(meanA0,vA0);
 
 %1) initial probability calculations
-pu1=exp(-0.5.*(thetauA0-Prior.meanA0)'*diag(Prior.stdA0.^-2)*(thetauA0-Prior.meanA0));
+% pu1=exp(-0.5.*(thetauA0-Prior.meanA0)'*diag(Prior.stdA0.^-2)*(thetauA0-Prior.meanA0));
 % pu2=exp(-0.5.*(thetaun-Prior.meann)'*diag(Prior.stdn.^-2)*(thetaun-Prior.meann));
+pu1=lognpdf(thetauA0,muA0,sigmaA0);
 pu2=lognpdf(thetaun,mun,sigman);
 if C.Estimateq,
     pu3=exp(-0.5.*(thetauq-Prior.meanq)'*diag(Prior.stdq.^-2)*(thetauq-Prior.meanq));
@@ -40,10 +46,11 @@ for i=1:C.N,
     %A0
     thetavA0=thetauA0+jmp.stdA0.*R.z1(:,i);   
     thetavA0(thetavA0<jmp.A0min)=jmp.A0min(thetavA0<jmp.A0min);
-    pv1=exp(-0.5.*(thetavA0-Prior.meanA0)'*diag(Prior.stdA0.^-2)*(thetavA0-Prior.meanA0));    
+%     pv1=exp(-0.5.*(thetavA0-Prior.meanA0)'*diag(Prior.stdA0.^-2)*(thetavA0-Prior.meanA0));    
+    pv1=lognpdf(thetavA0,muA0,sigmaA0);
     fv=CalcLklhd(Obs,thetavA0,thetaun,D,Prior,Delta,DeltaA,B,thetauq);    
 
-    MetRatio=exp(fv-fu)*pv1/pu1;
+    MetRatio=exp(fv-fu)*exp(sum(log(pv1))-sum(log(pu1)));
     if MetRatio>R.u1(i),
         C.n_a1=C.n_a1+1; %increment
         thetauA0=thetavA0; fu=fv; pu1=pv1; %update u->v     

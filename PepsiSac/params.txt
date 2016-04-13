@@ -23,11 +23,11 @@ Prior on lateral inflows m2/s (Use 0; if -1 then estimated from channel mass bal
 Standard deviation on lateral inflows m2/s
 0
 Jump standard deviation for  A0 [m2]
-60
+50
 Jump spatial correlation for A0 among reaches [m2]
 0.7
 Jump standard deviation for roughness coefficient 
-.0003
+.0005
 Jump standard deviation for lateral inflows m2/s
 1E-5
 Minimum value for lateral inflows m2/s

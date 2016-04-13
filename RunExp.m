@@ -21,7 +21,7 @@ AllTruth=ReadTruth (TruthFile,DAll);
 [AllObs] = CalcdA(DAll,AllObs);
 
 if ReRunPrior,
-    [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,jmp,DAll,Obs,D); 
+    [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,jmp,DAll,Obs,D,ShowFigs); 
     save([ RunDir '/Prior.mat'],'Prior','jmp','AllObs');
 else    
     load([ RunDir '/Prior.mat'],'Prior','jmp','AllObs');
