@@ -6,6 +6,7 @@ ShowFigs=true;
 RunBjerklie=false;
 ReRunPrior=true; %need to re-run every time jump params change!
 RunMetroMan=true;
+Smin=1E-5;
 
 fid=fopen('RunFile.txt');
 while ~feof(fid),

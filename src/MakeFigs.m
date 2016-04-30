@@ -10,13 +10,13 @@ subplot(n,1,1);
 plot(C.thetaA0'); grid on;
 title('Baseflow cross-sectional area, m^2')
 subplot(n,1,2)
-plot(C.thetan'); grid on;
+% plot(C.thetan'); grid on;
 title('Roughness coefficient')
-if C.Estimateq,
-    subplot(n,1,3);
-    plot(mean(C.thetaq)); grid on;
-    title('Average q, m2/s')
-end
+% if C.Estimateq,
+%     subplot(n,1,3);
+%     plot(mean(C.thetaq)); grid on;
+%     title('Average q, m2/s')
+% end
     
 figure(2)
 h1=errorbar(D.xkm./1000,E.A0hat,E.stdA0Post,'LineWidth',2,'Color','r'); hold on;
@@ -42,25 +42,25 @@ for i=1:D.nR,
     ylabel('Frequency')
 end
 
-figure(4)
-if isnan(Truth.n),
-    Truth.n=nan(size(Truth.A0));
-end
-    
-for i=1:D.nR,
-    subplot(1,D.nR,i)
-    x=linspace(0,max(C.thetan(i,:)),100);
-    y=normpdf(x,Prior.meann(i),Prior.stdn(i));
-    plot(x,y/max(y)*C.N/20,'r--','LineWidth',2); hold on;
-    
-    hist(C.thetan(i,C.Nburn+1:end),50); 
-    plot(Truth.n(i)*ones(2,1),get(gca,'YLim'),'g-','LineWidth',2); 
-    set(gca,'FontSize',14)
-    plot(E.nhat(i)*ones(2,1),get(gca,'YLim'),'k--','LineWidth',2); hold off;    
-    title(['Reach ' num2str(i)])
-    xlabel('n, [-]')
-    ylabel('Frequency')    
-end
+% figure(4)
+% if isnan(Truth.n),
+%     Truth.n=nan(size(Truth.A0));
+% end
+%     
+% for i=1:D.nR,
+%     subplot(1,D.nR,i)
+%     x=linspace(0,max(C.thetan(i,:)),100);
+%     y=normpdf(x,Prior.meann(i),Prior.stdn(i));
+%     plot(x,y/max(y)*C.N/20,'r--','LineWidth',2); hold on;
+%     
+%     hist(C.thetan(i,C.Nburn+1:end),50); 
+%     plot(Truth.n(i)*ones(2,1),get(gca,'YLim'),'g-','LineWidth',2); 
+%     set(gca,'FontSize',14)
+%     plot(E.nhat(i)*ones(2,1),get(gca,'YLim'),'k--','LineWidth',2); hold off;    
+%     title(['Reach ' num2str(i)])
+%     xlabel('n, [-]')
+%     ylabel('Frequency')    
+% end
 
 Qbar=squeeze(mean(mean(C.thetaQ)));
 
@@ -99,7 +99,7 @@ figure(9)
 plot(DAll.t,mean(AllTruth.Q,1),DAll.t,mean(E.AllQ,1),DAll.t,mean(E.QhatAllPrior,1),'LineWidth',2)
 set(gca,'FontSize',14)
 ylabel('Discharge, m^3/s')
-legend('True','Estimate')
+legend('True','Estimate','Prior')
 if DAll.t(1) > datenum(1900,0,0,0,0,0),
     datetick('x','mmm-dd-hh:MM','keepticks')
 end

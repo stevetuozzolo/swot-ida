@@ -1,6 +1,5 @@
 function [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,jmp,DAll,Obs,D,ShowFigs)
 
-N=1E4;
 
 %% 1 handle input prior information
 % note that A0min is refined for inclusion in the "jmp" variable at the
@@ -14,32 +13,70 @@ for i=1:DAll.nR,
     end
 end
 
-meann=Prior.meann;
-covn=Prior.stdn/meann;
+%% 2 Bjerklie calcs
 
-%% 2 initial probability calculations
+Prior.Wa=mean(AllObs.w,2);
+Prior.Ha=mean(AllObs.h,2);
+
+for r=1:DAll.nR,
+    Sa=mean(AllObs.S(r,:));
+
+    Prior.Wa(r)=mean(AllObs.w(r,:));
+    Prior.Ha(r)=mean(AllObs.h(r,:));
+    chiW=std(AllObs.w(r,:))/Prior.Wa(r);
+    chiH=std(AllObs.h(r,:))/Prior.Ha(r);
+
+%     N=1.06*(chiW/chiH)^-1.11;
+%     b=1-1/(1+N);
+
+    c1=0.85;
+    meanx1(r)=2.257+1.308*log10(chiH)+0.99*log10(chiW)+0.435*log10(Sa);
+    meanna(r)=0.22*Sa^0.18; %this is "na" in Bjerklie's notation
+
+%     meann=c1.*( AllObs.w(r,:).*AllObs.h(r,:)./Prior.Wa(r)./Prior.Ha(r) ).^meanx1(r) .* meanna(r);
+end
+
+covn=Prior.stdn./meanna;
+
+%% 3 initial probability calculations
 %n calcs
-v=(covn*meann)^2;
-[mun,sigman] = logninvstat(meann,v);
+v=(covn.*meanna).^2; %ok, could just do Prior.stdn^2... 
+[mun,sigman] = logninvstat(meanna,v);
+
+%x1 calcs: note the pdf is actually for -x1 
+covx1=0.5; %move this to be a prior input
+v=(covx1.*meanx1).^2;
+[mux1,sigmax1] = logninvstat(meanx1,v);
 
 %Q calcs
 v=(Prior.covQbar*Prior.meanQbar)^2;
 [muQbar,sigmaQbar] = logninvstat(Prior.meanQbar,v);
 
-A0u=allA0min; %arbitrary -- factor should not matter
-nu=meann; %ok as long as all r
 
-z1=randn(DAll.nR,N);
-z2=randn(DAll.nR,N);
+%% chain setup
+
+N=1E4; %chain length
+
+A0u=allA0min; %arbitrary -- factor should not matter
+nau=meanna; %ok as long as all r
+x1u=meanx1;
+
+z1=randn(DAll.nR,N); %A0
+z2=randn(DAll.nR,N); %n
+z3=randn(DAll.nR,N); %x1
 u1=rand(DAll.nR,N);
 u2=rand(DAll.nR,N);
+u3=rand(DAll.nR,N);
 na1(DAll.nR)=0;
 na2(DAll.nR)=0;
+na3(DAll.nR)=0;
 
 thetaA0=nan(DAll.nR,N);
 thetaA0(:,1)=A0u;
-thetan=nan(DAll.nR,N);
-thetan(:,1)=nu;
+thetana=nan(DAll.nR,N);
+thetana(:,1)=nau;
+thetax1=nan(DAll.nR,N);
+thetax1(:,1)=x1u;
 thetaQ=nan(DAll.nR,N);
 f=nan(DAll.nR,N);
 
@@ -47,20 +84,33 @@ f=nan(DAll.nR,N);
 tic
 disp('Processing prior for each reach...')
 for j=1:DAll.nR,
+    
+    if j==11,
+        stop=1;
+    end
             
     A0u=3*thetaA0(j,1); %the initial value is the minimum 
-    nu=thetan(j,1);
+    nau=thetana(j,1);
+    x1u=thetax1(j,1);
     
     %preliminary
-    pjmp.stdA0=A0u; % these are just trial-and-error
-    pjmp.stdn=0.25*nu;
+    pjmp.stdA0=A0u*.25; % these are just trial-and-error
+    pjmp.stdna=0.25*nau;
+    pjmp.stdx1=0.25*x1u;
     
     pjmp.target=0.5; %since each reach is hanlded individually, goal is 50%
+
+    %these used for Bjerklie's n
+%     Wa=mean(AllObs.w(r,:));
+%     Ha=mean(AllObs.h(r,:));
         
     pu1=1;
-    pu2=lognpdf(nu,mun,sigman);       
+    pu2=lognpdf(nau,mun(j),sigman(j));     
+    pu3=lognpdf(-x1u,mux1(j),sigmax1(j));     
     
-    Qu=mean( 1./nu.*(A0u+AllObs.dA(j,:)).^(5/3).*AllObs.w(j,:).^(-2/3).*sqrt(AllObs.S(j,:)) );
+    nhatu=c1.*( AllObs.w(j,:).*AllObs.h(j,:)./Prior.Wa(j)./Prior.Ha(j) ).^x1u .* nau; %updated if either nau or x1u change
+    
+    Qu=mean( 1./nhatu.*(A0u+AllObs.dA(j,:)).^(5/3).*AllObs.w(j,:).^(-2/3).*sqrt(AllObs.S(j,:)) );
     
     fu=lognpdf(Qu,muQbar,sigmaQbar);
 
@@ -69,7 +119,8 @@ for j=1:DAll.nR,
         % let the jumps adapt to target efficiencies
         if i==N*0.2,
             pjmp.stdA0=pjmp.stdA0/pjmp.target*(na1(j)/N/0.2);
-            pjmp.stdn=pjmp.stdn/pjmp.target*(na2(j)/N/0.2);
+            pjmp.stdna=pjmp.stdna/pjmp.target*(na2(j)/N/0.2);
+            pjmp.stdx1=pjmp.stdx1/pjmp.target*(na3(j)/N/0.2);
         end                
 
         %A0
@@ -79,7 +130,7 @@ for j=1:DAll.nR,
             pv1=0; fv=0;
         else
             pv1=1;
-            Qv = mean( 1./nu.*(A0v+AllObs.dA(j,:)).^(5/3).*AllObs.w(j,:).^(-2/3).*sqrt(AllObs.S(j,:)) );
+            Qv = mean( 1./nhatu.*(A0v+AllObs.dA(j,:)).^(5/3).*AllObs.w(j,:).^(-2/3).*sqrt(AllObs.S(j,:)) );
             fv=lognpdf(Qv,muQbar,sigmaQbar);
         end
 
@@ -91,28 +142,57 @@ for j=1:DAll.nR,
             fu=fv; pu1=pv1;
         end
 
-        %n
-        nv=nu+z2(j,i).*pjmp.stdn;   
-        if nv<=0,
+        %na
+        nav=nau+z2(j,i).*pjmp.stdna;   
+        if nav<=0,
             pv2=0;
         else
-            pv2=lognpdf(nv,mun,sigman);
+            pv2=lognpdf(nav,mun(j),sigman(j));
         end
+        
+        nhatv=c1.*( AllObs.w(j,:).*AllObs.h(j,:)./Prior.Wa(j)./Prior.Ha(j) ).^x1u .* nav; %updated if either nau or x1u change
 
-        Qv = mean( 1./nv.*(A0u+AllObs.dA(j,:)).^(5/3).*AllObs.w(j,:).^(-2/3).*sqrt(AllObs.S(j,:)) );
+        Qv = mean( 1./nhatv.*(A0u+AllObs.dA(j,:)).^(5/3).*AllObs.w(j,:).^(-2/3).*sqrt(AllObs.S(j,:)) );
         fv=lognpdf(Qv,muQbar,sigmaQbar);
 
         MetRatio=fv/fu*pv2/pu2;
 
         if MetRatio>u2(j,i),
             na2(j)=na2(j)+1;
-            nu=nv; Qu=Qv;
+            nau=nav; 
+            Qu=Qv;
             fu=fv; pu2=pv2;
+            
         end    
 
+        %x1
+        x1v=x1u+z3(j,i).*pjmp.stdx1;   
+        if x1v>=0,
+            pv3=0;
+        else
+            pv3=lognpdf(-x1v,mux1(j),sigmax1(j));
+        end
+        
+        nhatv=c1.*( AllObs.w(j,:).*AllObs.h(j,:)./Prior.Wa(j)./Prior.Ha(j) ).^x1v .* nau; %updated if either nau or x1u change
+
+        Qv = mean( 1./nhatv.*(A0u+AllObs.dA(j,:)).^(5/3).*AllObs.w(j,:).^(-2/3).*sqrt(AllObs.S(j,:)) );
+        fv=lognpdf(Qv,muQbar,sigmaQbar);
+
+        MetRatio=fv/fu*pv3/pu3;
+
+        if MetRatio>u3(j,i),
+            na3(j)=na3(j)+1;
+            x1u=x1v; 
+            Qu=Qv;
+            fu=fv; pu2=pv2;
+            
+        end    
+        
+        
         %store
-        thetan(j,i)=nu;    
         thetaA0(j,i)=A0u;    
+        thetana(j,i)=nau;    
+        thetax1(j,i)=x1u;    
         thetaQ(j,i)=Qu;
         f(j,i)=fu;
     end
@@ -120,45 +200,55 @@ end
 
 disp(['... Done. Elapsed time=' num2str(toc) 'sec.'])
 
-if min(na1)/N < 0.2 || min(na2)/N < 0.2 || max(na1)/N > 0.8 || max(na2)/N > 0.8
-    disp('Calculation of prior A0 & n failed; adjust jump standard deviations')
-    disp('Execution killed...')
-    disp(['Acceptance for A0: ' num2str(na1/N*100) '%'])
-    disp(['Acceptance for n: ' num2str(na2/N*100) '%'])
+% Commented out just for Upstream Garonnne run... not working well though
 
-    clear Prior
-end
+% if min(na1)/N < 0.2 || min(na2)/N < 0.2 || max(na1)/N > 0.8 || max(na2)/N > 0.8
+%     disp('Calculation of prior A0 & n failed; adjust jump standard deviations')
+%     disp('Execution killed...')
+%     disp(['Acceptance for A0: ' num2str(na1/N*100) '%'])
+%     disp(['Acceptance for n: ' num2str(na2/N*100) '%'])
+% 
+%     clear Prior
+%     return
+% end
 
 iUse=N/5+1:N;
 
 %% 4 posterior Q estimation
 Prior.meanA0=mean(thetaA0(:,iUse),2);
 Prior.stdA0=std(thetaA0(:,iUse),[],2);
-Prior.meann=mean(thetan(:,iUse),2);  %should check these parameters actually fit the posterior...
-Prior.stdn=std(thetan(:,iUse),[],2);
+Prior.meanna=mean(thetana(:,iUse),2);  %should check these parameters actually fit the posterior...
+Prior.stdna=std(thetana(:,iUse),[],2);
+Prior.meanx1=mean(thetax1(:,iUse),2);  %should check these parameters actually fit the posterior...
+Prior.stdx1=std(thetax1(:,iUse),[],2);
+
+for r=1:DAll.nR,
+    nhat=c1.*( AllObs.w(r,:).*AllObs.h(r,:)./Prior.Wa(r)./Prior.Ha(r) ).^Prior.meanx1(r) .* Prior.meanna(r); %updated if either nau or x1u change
+    QPrior(r,:)=1./nhat.*(Prior.meanA0(r)+AllObs.dA(r,:)).^(5/3).*AllObs.w(r,:).^(-2/3).*sqrt(AllObs.S(r,:)) ;
+end
 
 if ShowFigs,
 
     %check validity of the n parameterization ...
     r=3; %reach to check out.
 
-    meann=Prior.meann(r);
-    covn=Prior.stdn(r)./meann;
-    v=(covn.*meann).^2;
-    [mun,sigman] = logninvstat(meann,v);
+    meanna=Prior.meanna(r);
+    covn=Prior.stdna(r)./meanna;
+    v=(covn.*meanna).^2;
+    [muna,sigmana] = logninvstat(meanna,v);
 
     Nuse=length(iUse);
     figure(11)
-    [rHistn.N,rHistn.nc]=hist(thetan(r,iUse),35);
+    [rHistn.N,rHistn.nc]=hist(thetana(r,iUse),35);
     xval=linspace(0.9*min(rHistn.nc),1.1*max(rHistn.nc),100);
-    yval=lognpdf(xval,mun,sigman);
+    yval=lognpdf(xval,muna,sigmana);
 
     h=plotyy(rHistn.nc,rHistn.N,xval,yval);
     set(gca,'FontSize',14)
     ylabel(h(1),'Histogram of the posterior')
     ylabel(h(2),'Probability')
-    xlabel('Roughness coefficient, n, [-]')
-    title(['Reach #' num2str(r) ' for n'])
+    xlabel('Roughness coefficient parameter, na, [-]')
+    title(['Reach #' num2str(r) ' for na'])
 
     %check validity of the A0 parameterization ...
     r=2; %reach to check out.
@@ -179,6 +269,15 @@ if ShowFigs,
     ylabel(h(2),'Probability')
     xlabel('A_0, m^2')
     title(['Reach #' num2str(r) ' for A0'])
+    
+    figure(13)
+    hist(thetaQ(r,iUse),35)
+    set(gca,'FontSize',14)
+    ylabel('Histogram of the posterior')
+    xlabel('Discharge, m^3/s')
+    
+    figure(14)
+    hist(thetax1(r,iUse),35)
 end
 
 %% 5 

@@ -1,6 +1,6 @@
 % this script runs a single experiment, taking Run Directory as input
 
-function RunExp(RunDir,ShowFigs,ReRunPrior)
+function RunExp(RunDir,ShowFigs,ReRunPrior,Smin)
 
 % RunDir='.';
 
@@ -29,9 +29,9 @@ end
 
 [Obs,Prior] = GetCovMats(D,Obs,Prior);
 
-%limit slopes to zero...
-Obs.S(Obs.S<0)=0;
-AllObs.S(AllObs.S<0)=0;
+%limit slopes to Smin...
+Obs.S(Obs.S<Smin)=Smin;
+AllObs.S(AllObs.S<Smin)=Smin;
 
 Chain=MetropolisCalculations(Prior,D,Obs,jmp,Chain,R,DAll,AllObs);
 
@@ -47,7 +47,7 @@ if ShowFigs,
     MakeFigs(D,Truth,Prior,Chain,Estimate,Err,AllTruth,DAll);
 end
 
-WriteSummary (R,Err,Estimate,RunDir);
+% WriteSummary (R,Err,Estimate,RunDir);
 
 % CheckBals(Truth,Obs,D,Prior,Chain,R,Estimate)
 
