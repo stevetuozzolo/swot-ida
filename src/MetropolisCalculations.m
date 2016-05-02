@@ -3,7 +3,7 @@ function [C] = MetropolisCalculations(Prior,D,Obs,jmp,C,R,DAll,AllObs,BjerklienO
 [Delta,DeltaA,B,C,thetauA0,thetauna,thetaux1,thetauq,R]=InitializeMetropolis (D,C,Prior,R);
 
 %TEMPORARY ...
-jmp.stdx1=0.05.*mean(thetaux1);
+jmp.stdx1=0.03.*mean(thetaux1);
 
 % log-normal probabilty calculations
 meanA0=Prior.meanA0;
@@ -73,7 +73,7 @@ for i=1:C.N,
     MetRatio=exp(fv-fu)*exp(sum(log(pv2))-sum(log(pu2)));
     if MetRatio>R.u2(i),
         C.n_a2=C.n_a2+1; %increment
-        thetaun=thetavna; fu=fv; pu2=pv2; %update u->v     
+        thetauna=thetavna; fu=fv; pu2=pv2; %update u->v     
     end    
     C.thetana(:,i)=thetauna;    
 
@@ -83,7 +83,7 @@ for i=1:C.N,
     pv3=lognpdf(-thetavx1,mux1,sigmax1);
     fv=CalcLklhd(Obs,thetauA0,thetauna,thetavx1,D,Prior,Delta,DeltaA,B,thetauq,BjerklienOpt);    
 
-    MetRatio=exp(fv-fu)*exp(sum(log(pv2))-sum(log(pu2)));
+    MetRatio=exp(fv-fu)*exp(sum(log(pv3))-sum(log(pu3)));
     if MetRatio>R.u3(i),
         C.n_a3=C.n_a3+1; %increment
         thetaux1=thetavx1; fu=fv; pu3=pv3; %update u->v     

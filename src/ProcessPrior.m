@@ -94,9 +94,12 @@ for j=1:DAll.nR,
     x1u=thetax1(j,1);
     
     %preliminary
-    pjmp.stdA0=A0u*.25; % these are just trial-and-error
-    pjmp.stdna=0.25*nau;
-    pjmp.stdx1=0.25*x1u;
+%     pjmp.stdA0=A0u*.25; % these are just trial-and-error
+%     pjmp.stdna=0.25*nau;
+%     pjmp.stdx1=0.25*x1u;
+    pjmp.stdA0=A0u; % these are just trial-and-error
+    pjmp.stdna=nau;
+    pjmp.stdx1=x1u;
     
     pjmp.target=0.5; %since each reach is hanlded individually, goal is 50%
 
