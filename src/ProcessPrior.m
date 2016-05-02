@@ -1,4 +1,4 @@
-function [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,jmp,DAll,Obs,D,ShowFigs)
+function [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,jmp,DAll,Obs,D,ShowFigs,BjerklienOpt)
 
 
 %% 1 handle input prior information
@@ -108,7 +108,8 @@ for j=1:DAll.nR,
     pu2=lognpdf(nau,mun(j),sigman(j));     
     pu3=lognpdf(-x1u,mux1(j),sigmax1(j));     
     
-    nhatu=c1.*( AllObs.w(j,:).*AllObs.h(j,:)./Prior.Wa(j)./Prior.Ha(j) ).^x1u .* nau; %updated if either nau or x1u change
+%     nhatu=c1.*( AllObs.w(j,:).*AllObs.h(j,:)./Prior.Wa(j)./Prior.Ha(j) ).^x1u .* nau; %updated if either nau or x1u change
+    nhatu = calcnhat(AllObs.w(j,:),AllObs.h(j,:),Prior.Wa(j),Prior.Ha(j),c1,x1u,nau,BjerklienOpt);
     
     Qu=mean( 1./nhatu.*(A0u+AllObs.dA(j,:)).^(5/3).*AllObs.w(j,:).^(-2/3).*sqrt(AllObs.S(j,:)) );
     
@@ -150,7 +151,8 @@ for j=1:DAll.nR,
             pv2=lognpdf(nav,mun(j),sigman(j));
         end
         
-        nhatv=c1.*( AllObs.w(j,:).*AllObs.h(j,:)./Prior.Wa(j)./Prior.Ha(j) ).^x1u .* nav; %updated if either nau or x1u change
+%         nhatv=c1.*( AllObs.w(j,:).*AllObs.h(j,:)./Prior.Wa(j)./Prior.Ha(j) ).^x1u .* nav; %updated if either nau or x1u change
+        nhatv = calcnhat(AllObs.w(j,:),AllObs.h(j,:),Prior.Wa(j),Prior.Ha(j),c1,x1u,nav,BjerklienOpt);
 
         Qv = mean( 1./nhatv.*(A0u+AllObs.dA(j,:)).^(5/3).*AllObs.w(j,:).^(-2/3).*sqrt(AllObs.S(j,:)) );
         fv=lognpdf(Qv,muQbar,sigmaQbar);
@@ -173,7 +175,8 @@ for j=1:DAll.nR,
             pv3=lognpdf(-x1v,mux1(j),sigmax1(j));
         end
         
-        nhatv=c1.*( AllObs.w(j,:).*AllObs.h(j,:)./Prior.Wa(j)./Prior.Ha(j) ).^x1v .* nau; %updated if either nau or x1u change
+%         nhatv=c1.*( AllObs.w(j,:).*AllObs.h(j,:)./Prior.Wa(j)./Prior.Ha(j) ).^x1v .* nau; %updated if either nau or x1u change
+        nhatv = calcnhat(AllObs.w(j,:),AllObs.h(j,:),Prior.Wa(j),Prior.Ha(j),c1,x1v,nau,BjerklienOpt);
 
         Qv = mean( 1./nhatv.*(A0u+AllObs.dA(j,:)).^(5/3).*AllObs.w(j,:).^(-2/3).*sqrt(AllObs.S(j,:)) );
         fv=lognpdf(Qv,muQbar,sigmaQbar);
@@ -200,17 +203,16 @@ end
 
 disp(['... Done. Elapsed time=' num2str(toc) 'sec.'])
 
-% Commented out just for Upstream Garonnne run... not working well though
+if min(na1)/N < 0.2 || min(na2)/N < 0.2 || max(na1)/N > 0.8 || max(na2)/N > 0.8
+    disp('Calculation of prior A0 & n failed; adjust jump standard deviations')
+    disp('Execution killed...')
+    disp(['Acceptance for A0: ' num2str(na1/N*100) '%'])
+    disp(['Acceptance for na: ' num2str(na2/N*100) '%'])
+    disp(['Acceptance for x1: ' num2str(na3/N*100) '%'])
 
-% if min(na1)/N < 0.2 || min(na2)/N < 0.2 || max(na1)/N > 0.8 || max(na2)/N > 0.8
-%     disp('Calculation of prior A0 & n failed; adjust jump standard deviations')
-%     disp('Execution killed...')
-%     disp(['Acceptance for A0: ' num2str(na1/N*100) '%'])
-%     disp(['Acceptance for n: ' num2str(na2/N*100) '%'])
-% 
-%     clear Prior
-%     return
-% end
+    clear Prior
+    return
+end
 
 iUse=N/5+1:N;
 
@@ -223,7 +225,8 @@ Prior.meanx1=mean(thetax1(:,iUse),2);  %should check these parameters actually f
 Prior.stdx1=std(thetax1(:,iUse),[],2);
 
 for r=1:DAll.nR,
-    nhat=c1.*( AllObs.w(r,:).*AllObs.h(r,:)./Prior.Wa(r)./Prior.Ha(r) ).^Prior.meanx1(r) .* Prior.meanna(r); %updated if either nau or x1u change
+%     nhat=c1.*( AllObs.w(r,:).*AllObs.h(r,:)./Prior.Wa(r)./Prior.Ha(r) ).^Prior.meanx1(r) .* Prior.meanna(r); %updated if either nau or x1u change
+    nhat = calcnhat(AllObs.w(j,:),AllObs.h(j,:),Prior.Wa(j),Prior.Ha(j),c1,Prior.meanx1(r),Prior.meanna(r),BjerklienOpt);
     QPrior(r,:)=1./nhat.*(Prior.meanA0(r)+AllObs.dA(r,:)).^(5/3).*AllObs.w(r,:).^(-2/3).*sqrt(AllObs.S(r,:)) ;
 end
 

@@ -1,9 +1,9 @@
-function [C] = MetropolisCalculations(Prior,D,Obs,jmp,C,R,DAll,AllObs)
+function [C] = MetropolisCalculations(Prior,D,Obs,jmp,C,R,DAll,AllObs,BjerklienOpt)
 
 [Delta,DeltaA,B,C,thetauA0,thetauna,thetaux1,thetauq,R]=InitializeMetropolis (D,C,Prior,R);
 
 %TEMPORARY ...
-jmp.stdx1=0.25*mean(thetaux1);
+jmp.stdx1=0.05.*mean(thetaux1);
 
 % log-normal probabilty calculations
 meanA0=Prior.meanA0;
@@ -29,7 +29,7 @@ pu3=lognpdf(-thetaux1,mux1,sigmax1);
 %     pu4=exp(-0.5.*(thetauq-Prior.meanq)'*diag(Prior.stdq.^-2)*(thetauq-Prior.meanq));
 % end
 
-[fu,dQdx,dAdt]=CalcLklhd(Obs,thetauA0,thetauna,thetaux1,D,Prior,Delta,DeltaA,B,thetauq);
+[fu,dQdx,dAdt]=CalcLklhd(Obs,thetauA0,thetauna,thetaux1,D,Prior,Delta,DeltaA,B,thetauq,BjerklienOpt);
 
 % if Prior.meanq==-1,
 %     Prior.meanq=dQdx+dAdt;
@@ -55,7 +55,7 @@ for i=1:C.N,
     thetavA0(thetavA0<jmp.A0min)=jmp.A0min(thetavA0<jmp.A0min);
 %     pv1=exp(-0.5.*(thetavA0-Prior.meanA0)'*diag(Prior.stdA0.^-2)*(thetavA0-Prior.meanA0));    
     pv1=lognpdf(thetavA0,muA0,sigmaA0);
-    fv=CalcLklhd(Obs,thetavA0,thetauna,thetaux1,D,Prior,Delta,DeltaA,B,thetauq);    
+    fv=CalcLklhd(Obs,thetavA0,thetauna,thetaux1,D,Prior,Delta,DeltaA,B,thetauq,BjerklienOpt);    
 
     MetRatio=exp(fv-fu)*exp(sum(log(pv1))-sum(log(pu1)));
     if MetRatio>R.u1(i),
@@ -68,7 +68,7 @@ for i=1:C.N,
     thetavna=thetauna+jmp.stdn.*R.z2(:,i);
     thetavna(thetavna<jmp.nmin)=jmp.nmin;
     pv2=lognpdf(thetavna,muna,sigmana);
-    fv=CalcLklhd(Obs,thetauA0,thetavna,thetaux1,D,Prior,Delta,DeltaA,B,thetauq);    
+    fv=CalcLklhd(Obs,thetauA0,thetavna,thetaux1,D,Prior,Delta,DeltaA,B,thetauq,BjerklienOpt);    
 
     MetRatio=exp(fv-fu)*exp(sum(log(pv2))-sum(log(pu2)));
     if MetRatio>R.u2(i),
@@ -81,7 +81,7 @@ for i=1:C.N,
     thetavx1=thetaux1+jmp.stdx1.*R.z3(:,i);
 %     thetavna(thetavna<jmp.nmin)=jmp.nmin; %use no limits for now
     pv3=lognpdf(-thetavx1,mux1,sigmax1);
-    fv=CalcLklhd(Obs,thetauA0,thetauna,thetavx1,D,Prior,Delta,DeltaA,B,thetauq);    
+    fv=CalcLklhd(Obs,thetauA0,thetauna,thetavx1,D,Prior,Delta,DeltaA,B,thetauq,BjerklienOpt);    
 
     MetRatio=exp(fv-fu)*exp(sum(log(pv2))-sum(log(pu2)));
     if MetRatio>R.u3(i),
@@ -112,9 +112,9 @@ disp(['Elapsed time: ' num2str(toc) ' seconds.'])
 
 disp(['A0: Acceptance rate =' num2str(C.n_a1/C.N*100) ' pct.'])
 disp(['na: Acceptance rate =' num2str(C.n_a2/C.N*100) ' pct.'])
-disp(['x1: Acceptance rate =' num2str(C.n_a2/C.N*100) ' pct.'])
-if C.Estimateq,
-    disp(['q: Acceptance rate =' num2str(C.n_a3/C.N*100) ' pct.'])
-end
+disp(['x1: Acceptance rate =' num2str(C.n_a3/C.N*100) ' pct.'])
+% if C.Estimateq,
+%     disp(['q: Acceptance rate =' num2str(C.n_a3/C.N*100) ' pct.'])
+% end
 
 return
