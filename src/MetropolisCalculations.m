@@ -3,7 +3,7 @@ function [C] = MetropolisCalculations(Prior,D,Obs,jmp,C,R,DAll,AllObs,BjerklienO
 [Delta,DeltaA,B,C,thetauA0,thetauna,thetaux1,thetauq,R]=InitializeMetropolis (D,C,Prior,R);
 
 %TEMPORARY ...
-jmp.stdx1=0.03.*mean(thetaux1);
+jmp.stdx1=0.1.*mean(thetaux1);
 
 % log-normal probabilty calculations
 meanA0=Prior.meanA0;

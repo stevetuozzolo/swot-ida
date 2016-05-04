@@ -121,11 +121,19 @@ for j=1:DAll.nR,
     for i=1:N,    
         
         % let the jumps adapt to target efficiencies
-        if i==N*0.2,
-            pjmp.stdA0=pjmp.stdA0/pjmp.target*(na1(j)/N/0.2);
-            pjmp.stdna=pjmp.stdna/pjmp.target*(na2(j)/N/0.2);
-            pjmp.stdx1=pjmp.stdx1/pjmp.target*(na3(j)/N/0.2);
+        if i<N*0.2 && i~=1 && mod(i,100)==0,
+%             pjmp.stdA0=pjmp.stdA0/pjmp.target*(na1(j)/i);
+%             pjmp.stdna=pjmp.stdna/pjmp.target*(na2(j)/i);
+%             pjmp.stdx1=pjmp.stdx1/pjmp.target*(na3(j)/i);            
+            pjmp.stdA0=mean(pjmp.record.stdA0(j,1:i-1))/pjmp.target*(na1(j)/i);
+            pjmp.stdna=mean(pjmp.record.stdna(j,1:i-1))/pjmp.target*(na2(j)/i);
+            pjmp.stdx1=mean(pjmp.record.stdx1(j,1:i-1))/pjmp.target*(na3(j)/i);            
+            
         end                
+        
+        pjmp.record.stdA0(j,i)=pjmp.stdA0;
+        pjmp.record.stdna(j,i)=pjmp.stdna;
+        pjmp.record.stdx1(j,i)=pjmp.stdx1;
 
         %A0
         A0v=A0u+z1(j,i).*pjmp.stdA0;
@@ -202,6 +210,8 @@ for j=1:DAll.nR,
         thetaQ(j,i)=Qu;
         f(j,i)=fu;
     end
+    
+    stop=1;
 end
 
 disp(['... Done. Elapsed time=' num2str(toc) 'sec.'])
