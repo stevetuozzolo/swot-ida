@@ -4,11 +4,11 @@ uselib('SWOTQAlg')
 
 ShowFigs=true;
 RunBjerklie=false;
-ReRunPrior=true; %need to re-run every time jump params change!
+ReRunPrior=false; %need to re-run every time jump params change!
 RunMetroMan=true;
-Smin=1E-5;
+Smin=1E-5; %should move this to parameter file
 
-%TEMP -- need to move to parameter
+%TEMP -- need to move to parameter file
 BjerklienOpt=2; %1 = use standard form; 2 = use height-only form
 
 fid=fopen('RunFile.txt');

@@ -2,8 +2,12 @@ function [C] = MetropolisCalculations(Prior,D,Obs,jmp,C,R,DAll,AllObs,BjerklienO
 
 [Delta,DeltaA,B,C,thetauA0,thetauna,thetaux1,thetauq,R]=InitializeMetropolis (D,C,Prior,R);
 
-%TEMPORARY ...
+%TEMPORARY ... need to add in initial guess for A0 and na starting poitns
 jmp.stdx1=0.1.*mean(thetaux1);
+
+jmp.target1=0.5; %A0 is a scalar
+jmp.target2=0.25; %na is a vector
+jmp.target3=0.25; %na is a vector
 
 % log-normal probabilty calculations
 meanA0=Prior.meanA0;
@@ -49,6 +53,17 @@ for i=1:C.N,
     if mod(i,C.Nburn/2)==0, 
         disp(['Iteration #' num2str(i) '/' num2str(C.N) '.']); 
     end    
+    
+    if i<C.N*0.2 && i~=1 && mod(i,100)==0,
+        jmp.stdA0=mean(jmp.record.stdA0(1:i-1))/jmp.target1*(C.n_a1/i);
+        jmp.stdn=mean(jmp.record.stdn(1:i-1))/jmp.target2*(C.n_a2/i); %need to change variable name to na
+        jmp.stdx1=mean(jmp.record.stdx1(1:i-1))/jmp.target3*(C.n_a3/i);            
+
+    end                    
+    
+    jmp.record.stdA0(i)=jmp.stdA0;
+    jmp.record.stdn(i)=jmp.stdn; %should change variable name to na
+    jmp.record.stdx1(i)=jmp.stdx1;
         
     %A0
     thetavA0=thetauA0+jmp.stdA0.*R.z1(:,i);   

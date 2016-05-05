@@ -29,7 +29,7 @@ end
 
 [Obs,Prior] = GetCovMats(D,Obs,Prior);
 
-%limit slopes to Smin...
+%limit slopes to Smin... should just move this above the SelObs...
 Obs.S(Obs.S<Smin)=Smin;
 AllObs.S(AllObs.S<Smin)=Smin;
 
