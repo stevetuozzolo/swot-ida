@@ -10,7 +10,7 @@ ObsFile=[RunDir '/SWOTobs.txt'];
 [DAll,Obs] = ReadObs(ObsFile);
 
 ParamFile=[RunDir '/params.txt'];
-[Chain,Prior,jmp,R,Exp] = ReadParams(ParamFile,DAll);
+[Chain,Prior,R,Exp] = ReadParams(ParamFile);
 
 TruthFile=[RunDir '/truth.txt'];
 AllTruth=ReadTruth (TruthFile,DAll);
@@ -21,7 +21,7 @@ AllTruth=ReadTruth (TruthFile,DAll);
 [AllObs] = CalcdA(DAll,AllObs);
 
 if ReRunPrior,
-    [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,jmp,DAll,Obs,D,ShowFigs,BjerklienOpt); 
+    [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,DAll,Obs,D,ShowFigs,BjerklienOpt); 
     save([ RunDir '/Prior.mat'],'Prior','jmp','AllObs');
 else    
     load([ RunDir '/Prior.mat'],'Prior','jmp','AllObs');

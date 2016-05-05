@@ -39,6 +39,7 @@ Obs.CSdAw=[Obs.Cs zeros(D.nR*D.nt)  zeros(D.nR*D.nt);
            zeros(D.nR*D.nt) zeros(D.nR*D.nt) Obs.Cw ;];
 
 %This is the covariance of the lateral inflows
-Prior.Cqf=eye(N).*Prior.stdq.^2;
+% Prior.Cqf=eye(N).*Prior.stdq.^2;
+Prior.Cqf=0; %this should be obselete...
 
 return

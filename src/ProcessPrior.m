@@ -1,4 +1,4 @@
-function [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,jmp,DAll,Obs,D,ShowFigs,BjerklienOpt)
+function [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,DAll,Obs,D,ShowFigs,BjerklienOpt)
 
 
 %% 1 handle input prior information
@@ -26,21 +26,16 @@ for r=1:DAll.nR,
     chiW=std(AllObs.w(r,:))/Prior.Wa(r);
     chiH=std(AllObs.h(r,:))/Prior.Ha(r);
 
-%     N=1.06*(chiW/chiH)^-1.11;
-%     b=1-1/(1+N);
-
     c1=0.85;
     meanx1(r)=2.257+1.308*log10(chiH)+0.99*log10(chiW)+0.435*log10(Sa);
     meanna(r)=0.22*Sa^0.18; %this is "na" in Bjerklie's notation
-
-%     meann=c1.*( AllObs.w(r,:).*AllObs.h(r,:)./Prior.Wa(r)./Prior.Ha(r) ).^meanx1(r) .* meanna(r);
 end
 
-covn=Prior.stdn./meanna;
+covna=.001./meanna; %should experiment with this... a very low value
 
 %% 3 initial probability calculations
 %n calcs
-v=(covn.*meanna).^2; %ok, could just do Prior.stdn^2... 
+v=(covna.*meanna).^2; %ok, could just do Prior.stdn^2... 
 [mun,sigman] = logninvstat(meanna,v);
 
 %x1 calcs: note the pdf is actually for -x1 
@@ -94,18 +89,11 @@ for j=1:DAll.nR,
     x1u=thetax1(j,1);
     
     %preliminary
-%     pjmp.stdA0=A0u*.25; % these are just trial-and-error
-%     pjmp.stdna=0.25*nau;
-%     pjmp.stdx1=0.25*x1u;
     pjmp.stdA0=A0u; % these are just trial-and-error
     pjmp.stdna=nau;
     pjmp.stdx1=x1u;
     
     pjmp.target=0.5; %since each reach is hanlded individually, goal is 50%
-
-    %these used for Bjerklie's n
-%     Wa=mean(AllObs.w(r,:));
-%     Ha=mean(AllObs.h(r,:));
         
     pu1=1;
     pu2=lognpdf(nau,mun(j),sigman(j));     
@@ -122,13 +110,9 @@ for j=1:DAll.nR,
         
         % let the jumps adapt to target efficiencies
         if i<N*0.2 && i~=1 && mod(i,100)==0,
-%             pjmp.stdA0=pjmp.stdA0/pjmp.target*(na1(j)/i);
-%             pjmp.stdna=pjmp.stdna/pjmp.target*(na2(j)/i);
-%             pjmp.stdx1=pjmp.stdx1/pjmp.target*(na3(j)/i);            
             pjmp.stdA0=mean(pjmp.record.stdA0(j,1:i-1))/pjmp.target*(na1(j)/i);
             pjmp.stdna=mean(pjmp.record.stdna(j,1:i-1))/pjmp.target*(na2(j)/i);
-            pjmp.stdx1=mean(pjmp.record.stdx1(j,1:i-1))/pjmp.target*(na3(j)/i);            
-            
+            pjmp.stdx1=mean(pjmp.record.stdx1(j,1:i-1))/pjmp.target*(na3(j)/i);                        
         end                
         
         pjmp.record.stdA0(j,i)=pjmp.stdA0;

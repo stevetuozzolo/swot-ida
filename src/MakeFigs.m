@@ -1,11 +1,12 @@
 function MakeFigs (D,Truth,Prior,C,E,Err,AllTruth,DAll)
 
 figure(1)
-if C.Estimateq,
-    n=3;
-else
-    n=2;
-end
+% if C.Estimateq,
+%     n=3;
+% else
+%     n=2;
+% end
+n=2;
 subplot(n,1,1); 
 plot(C.thetaA0'); grid on;
 title('Baseflow cross-sectional area, m^2')

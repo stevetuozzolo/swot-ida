@@ -2,7 +2,8 @@ function [C] = MetropolisCalculations(Prior,D,Obs,jmp,C,R,DAll,AllObs,BjerklienO
 
 [Delta,DeltaA,B,C,thetauA0,thetauna,thetaux1,thetauq,R]=InitializeMetropolis (D,C,Prior,R);
 
-%TEMPORARY ... need to add in initial guess for A0 and na starting poitns
+jmp.stdA0=0.1.*mean(thetauA0);
+jmp.stdna=0.1.*mean(thetauna);
 jmp.stdx1=0.1.*mean(thetaux1);
 
 jmp.target1=0.5; %A0 is a scalar
@@ -56,13 +57,13 @@ for i=1:C.N,
     
     if i<C.N*0.2 && i~=1 && mod(i,100)==0,
         jmp.stdA0=mean(jmp.record.stdA0(1:i-1))/jmp.target1*(C.n_a1/i);
-        jmp.stdn=mean(jmp.record.stdn(1:i-1))/jmp.target2*(C.n_a2/i); %need to change variable name to na
+        jmp.stdna=mean(jmp.record.stdna(1:i-1))/jmp.target2*(C.n_a2/i); %need to change variable name to na
         jmp.stdx1=mean(jmp.record.stdx1(1:i-1))/jmp.target3*(C.n_a3/i);            
 
     end                    
     
     jmp.record.stdA0(i)=jmp.stdA0;
-    jmp.record.stdn(i)=jmp.stdn; %should change variable name to na
+    jmp.record.stdna(i)=jmp.stdna; %should change variable name to na
     jmp.record.stdx1(i)=jmp.stdx1;
         
     %A0
@@ -80,7 +81,7 @@ for i=1:C.N,
     C.thetaA0(:,i)=thetauA0;
     
     %na
-    thetavna=thetauna+jmp.stdn.*R.z2(:,i);
+    thetavna=thetauna+jmp.stdna.*R.z2(:,i);
     thetavna(thetavna<jmp.nmin)=jmp.nmin;
     pv2=lognpdf(thetavna,muna,sigmana);
     fv=CalcLklhd(Obs,thetauA0,thetavna,thetaux1,D,Prior,Delta,DeltaA,B,thetauq,BjerklienOpt);    
