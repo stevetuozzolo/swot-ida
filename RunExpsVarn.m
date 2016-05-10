@@ -1,6 +1,6 @@
 clear all
 
-uselib('SWOTQAlg')
+addpath ~/Desktop/swot-ida/src
 
 ShowFigs=true;
 RunBjerklie=false;

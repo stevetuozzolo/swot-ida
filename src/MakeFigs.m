@@ -26,7 +26,7 @@ h2=plot(D.xkm./1000,Truth.A0,'LineWidth',2); hold off;
 set(gca,'FontSize',14)
 xlabel('Flow distance, km')
 ylabel('Cross-sectional area, m^2')
-legend([h1; hp; h2;],'Estimate','Prior','True',0)
+legend([h1; hp; h2;],'Estimate','Prior','True')
 
 figure(3)
 for i=1:D.nR,
@@ -87,7 +87,7 @@ legend(h([1 end]),'True','MetroMan')
 figure(7)
 plot(1:D.nR,Err.QRelErrPrior,'.-',1:D.nR,Err.QRelErrPost,'.-');
 xlabel('Reach'); ylabel('Relative error');
-legend('Prior','Posterior',0);
+legend('Prior','Posterior');
 
 figure(8)
 plot(Qbar,C.LogLike,'o')
