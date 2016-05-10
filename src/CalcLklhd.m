@@ -58,6 +58,13 @@ Cf=Obs.CA+CdQ+Prior.Cqf; %+CdQm;
 
 %3) Calculate likelihood
 Theta=dQdxv+dAdtv; %-qhatv; %omit q estimation for now
-f=-0.5.*Theta'/Cf*Theta;
+
+if isnan(rcond(Cf))
+    f=0;
+else
+    f=-0.5.*Theta'/Cf*Theta;
+end
+
+
 
 return

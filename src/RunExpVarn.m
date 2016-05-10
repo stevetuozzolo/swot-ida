@@ -20,6 +20,10 @@ AllTruth=ReadTruth (TruthFile,DAll);
 [Obs] = CalcdA(D,Obs);
 [AllObs] = CalcdA(DAll,AllObs);
 
+%limit slopes to Smin... should just move this above the SelObs...
+Obs.S(Obs.S<Smin)=Smin;
+AllObs.S(AllObs.S<Smin)=Smin;
+
 if ReRunPrior,
     [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,DAll,Obs,D,ShowFigs,BjerklienOpt); 
     save([ RunDir '/Prior.mat'],'Prior','jmp','AllObs');
@@ -28,10 +32,6 @@ else
 end
 
 [Obs,Prior] = GetCovMats(D,Obs,Prior);
-
-%limit slopes to Smin... should just move this above the SelObs...
-Obs.S(Obs.S<Smin)=Smin;
-AllObs.S(AllObs.S<Smin)=Smin;
 
 Chain=MetropolisCalculations(Prior,D,Obs,jmp,Chain,R,DAll,AllObs,BjerklienOpt);
 

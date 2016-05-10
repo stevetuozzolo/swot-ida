@@ -53,6 +53,7 @@ v=(Prior.covQbar*Prior.meanQbar)^2;
 N=1E4; %chain length
 
 A0u=allA0min; %arbitrary -- factor should not matter
+A0u(A0u==0)=1; 
 nau=meanna; %ok as long as all r
 x1u=meanx1;
 
@@ -200,7 +201,7 @@ end
 
 disp(['... Done. Elapsed time=' num2str(toc) 'sec.'])
 
-if min(na1)/N < 0.2 || min(na2)/N < 0.2 || max(na1)/N > 0.8 || max(na2)/N > 0.8
+if min(na1)/N < 0.15 || min(na2)/N < 0.15 || min(na3)/N < 0.15 || max(na1)/N > 0.8 || max(na2)/N > 0.8 || max(na3)/N > 0.8
     disp('Calculation of prior A0 & n failed; adjust jump standard deviations')
     disp('Execution killed...')
     disp(['Acceptance for A0: ' num2str(na1/N*100) '%'])
