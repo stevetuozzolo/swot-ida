@@ -233,18 +233,11 @@ if ShowFigs,
     %check validity of the n parameterization ...
     r=3; %reach to check out.
 
-    meanna=Prior.meanna(r);
-    covn=Prior.stdna(r)./meanna;
-    v=(covn.*meanna).^2;
-    [muna,sigmana] = logninvstat(meanna,v);
-
     Nuse=length(iUse);
+    
     figure(11)
-    [rHistn.N,rHistn.nc]=hist(thetana(r,iUse),35);
-    xval=linspace(0.9*min(rHistn.nc),1.1*max(rHistn.nc),100);
-    yval=lognpdf(xval,muna,sigmana);
-
-    h=plotyy(rHistn.nc,rHistn.N,xval,yval);
+    h=CompareLogN(Prior.meanA0(r),Prior.stdA0(r)./Prior.meanA0(r),thetaA0(r,iUse));
+    
     set(gca,'FontSize',14)
     ylabel(h(1),'Histogram of the posterior')
     ylabel(h(2),'Probability')
@@ -253,18 +246,9 @@ if ShowFigs,
 
     %check validity of the A0 parameterization ...
     r=2; %reach to check out.
-
-    meanA0=Prior.meanA0(r);
-    covA0=Prior.stdA0(r)./meanA0;
-    v=(covA0.*meanA0).^2;
-    [muA0,sigmaA0] = logninvstat(meanA0,v);
-
+    
     figure(12)
-    [rHistA0.N,rHistA0.A0c]=hist(thetaA0(r,iUse),35);
-    xval=linspace(0.9*min(rHistA0.A0c),1.1*max(rHistA0.A0c),100);
-    yval=lognpdf(xval,muA0,sigmaA0);
-
-    h=plotyy(rHistA0.A0c,rHistA0.N,xval,yval);
+    h=CompareLogN(Prior.meanA0(r),Prior.stdA0(r)./Prior.meanA0(r),thetaA0(r,iUse));
     set(gca,'FontSize',14)
     ylabel(h(1),'Histogram of the posterior')
     ylabel(h(2),'Probability')
@@ -272,13 +256,16 @@ if ShowFigs,
     title(['Reach #' num2str(r) ' for A0'])
     
     figure(13)
-    hist(thetaQ(r,iUse),35)
+    h=CompareLogN(Prior.meanQbar,Prior.covQbar,thetaQ(r,iUse)); 
+    ylabel(h(1),'Histogram of the posterior')
+    ylabel(h(2),'Probability')
     set(gca,'FontSize',14)
     ylabel('Histogram of the posterior')
     xlabel('Discharge, m^3/s')
     
     figure(14)
     hist(thetax1(r,iUse),35)
+    
 end
 
 %% 5 

@@ -1,6 +1,6 @@
 clear all
 
-addpath ~/Desktop/swot-ida/src
+addpath ./src
 
 ShowFigs=true;
 RunBjerklie=false;
