@@ -63,7 +63,7 @@ end
 %     ylabel('Frequency')    
 % end
 
-Qbar=squeeze(mean(mean(C.thetaQ)));
+Qbar=squeeze(mean(mean(C.thetaAllQ)));
 
 figure(5)
 plot(Qbar); grid on;

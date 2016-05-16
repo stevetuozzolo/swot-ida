@@ -183,7 +183,7 @@ for j=1:DAll.nR,
             na3(j)=na3(j)+1;
             x1u=x1v; 
             Qu=Qv;
-            fu=fv; pu2=pv2;
+            fu=fv; pu3=pv3;
             
         end    
         

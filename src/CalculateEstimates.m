@@ -36,11 +36,15 @@ for i=1:C.N,
     for r=1:D.nR,
 %         nhat(r,:)=c1.*( Obs.w(r,:).*Obs.h(r,:)./Prior.Wa(r)./Prior.Ha(r) ).^C.thetax1(r,i) .* C.thetana(r,i);
         nhat(r,:)=calcnhat(Obs.w(r,:),Obs.h(r,:),Prior.Wa(r),Prior.Ha(r),c1,...
-            C.thetax1(r,i),C.thetana(r,i),BjerklienOpt);        
+            C.thetax1(r,i),C.thetana(r,i),BjerklienOpt);    
+        nhatAll(r,:)=calcnhat(AllObs.w(r,:),AllObs.h(r,:),Prior.Wa(r),Prior.Ha(r),c1,...
+            C.thetax1(r,i),C.thetana(r,i),BjerklienOpt);    
     end
     
     C.thetaQ(:,:,i) = 1./nhat .* ...
         (C.thetaA0(:,i)*ones(1,D.nt)+Obs.dA).^(5/3).*Obs.w.^(-2/3).*sqrt(Obs.S) ;
+    C.thetaAllQ(:,:,i) = 1./nhatAll .* ...
+        (C.thetaA0(:,i)*ones(1,DAll.nt)+AllObs.dA).^(5/3).*AllObs.w.^(-2/3).*sqrt(AllObs.S);
 end
 
 Estimate.QhatPost=mean(C.thetaQ(:,:,C.Nburn+1:end),3);
