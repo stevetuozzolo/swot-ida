@@ -19,19 +19,26 @@ Prior.Wa=mean(AllObs.w,2);
 Prior.Ha=mean(AllObs.h,2);
 
 for r=1:DAll.nR,
-    Sa=mean(AllObs.S(r,:));
+    DB.Sa(r)=mean(AllObs.S(r,:));
 
     Prior.Wa(r)=mean(AllObs.w(r,:));
     Prior.Ha(r)=mean(AllObs.h(r,:));
-    chiW=std(AllObs.w(r,:))/Prior.Wa(r);
-    chiH=std(AllObs.h(r,:))/Prior.Ha(r);
+    DB.chiW(r)=std(AllObs.w(r,:))/Prior.Wa(r);
+    DB.chiH(r)=std(AllObs.h(r,:))/Prior.Ha(r);
 
-    c1=0.85;
-    meanx1(r)=2.257+1.308*log10(chiH)+0.99*log10(chiW)+0.435*log10(Sa);
-    meanna(r)=0.22*Sa^0.18; %this is "na" in Bjerklie's notation
+    if BjerklienOpt < 3,
+        c1=0.85;
+        meanx1(r)=2.257+1.308*log10(DB.chiH(r))+0.99*log10(DB.chiW(r))+0.435*log10(DB.Sa(r));
+        meanna(r)=0.22*Sa^0.18; %this is "na" in Bjerklie's notation
+    elseif BjerklienOpt == 3,
+        c1=nan;
+        meanx1(r)=-0.09; %these values computed across 10 rivers, all reaches
+        meanna(r)=0.04;
+    end
 end
 
-covna=.001./meanna; %should experiment with this... a very low value
+covna=.05;
+covx1=.25;
 
 %% 3 initial probability calculations
 %n calcs
@@ -39,7 +46,8 @@ v=(covna.*meanna).^2; %ok, could just do Prior.stdn^2...
 [mun,sigman] = logninvstat(meanna,v);
 
 %x1 calcs: note the pdf is actually for -x1 
-covx1=0.5; %move this to be a prior input
+% covx1=0.25; %move this to be a prior input
+% covx1=1; %move this to be a prior input
 v=(covx1.*meanx1).^2;
 [mux1,sigmax1] = logninvstat(meanx1,v);
 
@@ -236,7 +244,7 @@ if ShowFigs,
     Nuse=length(iUse);
     
     figure(11)
-    h=CompareLogN(Prior.meanA0(r),Prior.stdA0(r)./Prior.meanA0(r),thetaA0(r,iUse));
+    h=CompareLogN(Prior.meanna(r),Prior.stdna(r)./Prior.meanna(r),thetana(r,iUse));
     
     set(gca,'FontSize',14)
     ylabel(h(1),'Histogram of the posterior')
@@ -265,6 +273,14 @@ if ShowFigs,
     
     figure(14)
     hist(thetax1(r,iUse),35)
+    
+    h=CompareLogN(-Prior.meanx1(r),Prior.stdx1(r)./Prior.meanx1(r),-thetax1(r,iUse)); 
+    ylabel(h(1),'Histogram of the posterior')
+    ylabel(h(2),'Probability')
+    set(gca,'FontSize',14)
+    ylabel('Histogram of the posterior')
+    xlabel('x1')
+
     
 end
 
