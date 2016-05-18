@@ -6,16 +6,18 @@ figure(1)
 % else
 %     n=2;
 % end
-n=3;
+n=2;
 subplot(n,1,1); 
 plot(C.thetaA0'); grid on;
 title('Baseflow cross-sectional area, m^2')
 subplot(n,1,2)
-plot(C.thetana'); grid on;
-title('Roughness coefficient parameter na')
-subplot(n,1,3)
-plot(C.thetax1'); grid on;
-title('Roughness coefficient parameter x1')
+% plot(C.thetan'); grid on;
+title('Roughness coefficient')
+% if C.Estimateq,
+%     subplot(n,1,3);
+%     plot(mean(C.thetaq)); grid on;
+%     title('Average q, m2/s')
+% end
     
 figure(2)
 h1=errorbar(D.xkm./1000,E.A0hat,E.stdA0Post,'LineWidth',2,'Color','r'); hold on;

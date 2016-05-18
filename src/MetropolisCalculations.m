@@ -6,7 +6,7 @@ jmp.stdA0=0.1.*mean(thetauA0);
 jmp.stdna=0.1.*mean(thetauna);
 jmp.stdx1=0.1.*mean(thetaux1);
 
-jmp.target1=0.25; %A0 is a scalar
+jmp.target1=0.5; %A0 is a scalar
 jmp.target2=0.25; %na is a vector
 jmp.target3=0.25; %na is a vector
 
@@ -34,7 +34,7 @@ pu3=lognpdf(-thetaux1,mux1,sigmax1);
 %     pu4=exp(-0.5.*(thetauq-Prior.meanq)'*diag(Prior.stdq.^-2)*(thetauq-Prior.meanq));
 % end
 
-fu=CalcLklhd(Obs,thetauA0,thetauna,thetaux1,D,Prior,Delta,DeltaA,B,thetauq,BjerklienOpt);
+[fu,dQdx,dAdt]=CalcLklhd(Obs,thetauA0,thetauna,thetaux1,D,Prior,Delta,DeltaA,B,thetauq,BjerklienOpt);
 
 % if Prior.meanq==-1,
 %     Prior.meanq=dQdx+dAdt;

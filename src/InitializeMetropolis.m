@@ -28,8 +28,8 @@ thetauq=nan;
 
 %Get Random numbers
 rng(R.Seed)
-% R.z1=randn(1,C.N);  %spatially invariant increments... not good
-R.z1=randn(D.nR,C.N);  
+R.z1=randn(1,C.N);  %spatially invariant increments... not good
+% R.z1=randn(D.nR,C.N);  
 R.z2=randn(D.nR,C.N);
 R.z3=randn(D.nR,C.N);
 % R.z3=randn(D.nR*(D.nt-1),C.N);
