@@ -4,7 +4,7 @@ addpath ./src
 
 ShowFigs=true;
 RunBjerklie=false;
-ReRunPrior=false; %need to re-run every time jump params change! just use for debugging etc.
+ReRunPrior=true; %need to re-run every time jump params change! just use for debugging etc.
 RunMetroMan=true;
 Smin=1E-5; %should move this to parameter file
 

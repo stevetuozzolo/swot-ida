@@ -6,7 +6,7 @@ jmp.stdA0=0.1.*mean(thetauA0);
 jmp.stdna=0.1.*mean(thetauna);
 jmp.stdx1=0.1.*mean(thetaux1);
 
-jmp.target1=0.25; %A0 is a scalar
+jmp.target1=0.25; %A0 is a vector
 jmp.target2=0.25; %na is a vector
 jmp.target3=0.25; %na is a vector
 
