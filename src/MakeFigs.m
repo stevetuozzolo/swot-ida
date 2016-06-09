@@ -1,4 +1,4 @@
-function MakeFigs (D,Truth,Prior,C,E,Err,AllTruth,DAll)
+function MakeFigs (D,Truth,Prior,C,E,Err,AllTruth,DAll,AllObs)
 
 figure(1)
 % if C.Estimateq,
@@ -41,29 +41,44 @@ for i=1:D.nR,
     ylabel('Frequency')
 end
 
-% figure(4)
-% if isnan(Truth.n),
-%     Truth.n=nan(size(Truth.A0));
-% end
-%     
-% for i=1:D.nR,
-%     subplot(1,D.nR,i)
-%     x=linspace(0,max(C.thetan(i,:)),100);
-%     y=normpdf(x,Prior.meann(i),Prior.stdn(i));
-%     plot(x,y/max(y)*C.N/20,'r--','LineWidth',2); hold on;
-%     
-%     hist(C.thetan(i,C.Nburn+1:end),50); 
-%     plot(Truth.n(i)*ones(2,1),get(gca,'YLim'),'g-','LineWidth',2); 
-%     set(gca,'FontSize',14)
-%     plot(E.nhat(i)*ones(2,1),get(gca,'YLim'),'k--','LineWidth',2); hold off;    
-%     title(['Reach ' num2str(i)])
-%     xlabel('n, [-]')
-%     ylabel('Frequency')    
-% end
-
-Qbar=squeeze(mean(mean(C.thetaAllQ)));
+figure(4)
+if isnan(Truth.n),
+    Truth.n=nan(size(Truth.A0));
+end
+    
+for i=1:D.nR,
+    subplot(1,D.nR,i)
+    x=linspace(0,max(C.thetana(i,:)),100);
+    y=normpdf(x,Prior.meanna(i),Prior.stdna(i));
+    plot(x,y/max(y)*C.N/20,'r--','LineWidth',2); hold on;
+    
+    hist(C.thetana(i,C.Nburn+1:end),50); 
+    plot(Truth.n(i)*ones(2,1),get(gca,'YLim'),'g-','LineWidth',2); 
+    set(gca,'FontSize',14)
+    plot(E.nahat(i)*ones(2,1),get(gca,'YLim'),'k--','LineWidth',2); hold off;    
+    title(['Reach ' num2str(i)])
+    xlabel('n0, [-]')
+    ylabel('Frequency')    
+end
 
 figure(5)
+for i=1:D.nR,
+    subplot(1,D.nR,i)
+    x=linspace(0,max(C.thetax1(i,:)),100);
+    y=normpdf(x,Prior.meanx1(i),Prior.stdx1(i));
+    plot(x,y/max(y)*C.N/20,'r--','LineWidth',2); hold on;
+    
+    hist(C.thetax1(i,C.Nburn+1:end),50);     
+    set(gca,'FontSize',14)
+    plot(E.x1hat(i)*ones(2,1),get(gca,'YLim'),'k--','LineWidth',2); hold off;    
+    title(['Reach ' num2str(i)])
+    xlabel('x1, [-]')
+    ylabel('Frequency')    
+end
+
+Qbar=squeeze(mean(mean(C.thetaAllQ(:,:,C.Nburn+1:end) )));
+
+figure(6)
 plot(Qbar); grid on;
 set(gca,'FontSize',14)
 xlabel('Iteration')
@@ -74,7 +89,7 @@ plot([1 C.N],mean(mean(Truth.Q))*ones(2,1));
 hold off;
 
 
-figure(6)
+figure(7)
 h=plot(D.t,Truth.Q,D.t,E.QhatPostf','LineWidth',2); 
 set(h(1:D.nR),'Color','b');  set(h(D.nR+1:end),'Color','r');
 set(gca,'FontSize',14)
@@ -82,19 +97,19 @@ xlabel('Time, days')
 ylabel('Discharge, m^3/s')
 legend(h([1 end]),'True','MetroMan')
 
-figure(7)
+figure(8)
 plot(1:D.nR,Err.QRelErrPrior,'.-',1:D.nR,Err.QRelErrPost,'.-');
 xlabel('Reach'); ylabel('Relative error');
 legend('Prior','Posterior');
 
-figure(8)
+figure(9)
 plot(Qbar,C.LogLike,'o')
 set(gca,'FontSize',14)
 xlabel('Average discharge, m^3/s')
 ylabel('Log of likelihood')
 
 
-figure(9)
+figure(10)
 plot(DAll.t,mean(AllTruth.Q,1),DAll.t,mean(E.AllQ,1),DAll.t,mean(E.QhatAllPrior,1),'LineWidth',2)
 set(gca,'FontSize',14)
 ylabel('Discharge, m^3/s')
@@ -102,5 +117,9 @@ legend('True','Estimate','Prior')
 if DAll.t(1) > datenum(1900,0,0,0,0,0),
     datetick('x','mmm-dd-hh:MM','keepticks')
 end
+
+r=1;
+figure(11)
+loglog(E.AllQ(r,:)',AllObs.w(r,:)','+');
 
 return

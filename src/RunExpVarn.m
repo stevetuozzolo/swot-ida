@@ -44,7 +44,7 @@ Err=CalcErrorStats(AllTruth,Estimate,DAll);
 Err=DispRMSEStats(Err,Truth,Prior,Estimate);
 
 if ShowFigs,
-    MakeFigs(D,Truth,Prior,Chain,Estimate,Err,AllTruth,DAll);
+    MakeFigs(D,Truth,Prior,Chain,Estimate,Err,AllTruth,DAll,AllObs);
 end
 
 % WriteSummary (R,Err,Estimate,RunDir);
