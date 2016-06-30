@@ -44,7 +44,7 @@ for i=1:C.N,
     C.thetaQ(:,:,i) = 1./nhat .* ...
         (C.thetaA0(:,i)*ones(1,D.nt)+Obs.dA).^(5/3).*Obs.w.^(-2/3).*sqrt(Obs.S) ;
     C.thetaAllQ(:,:,i) = 1./nhatAll .* ...
-        (C.thetaA0(:,i)*ones(1,DAll.nt)+AllObs.dA).^(5/3).*AllObs.w.^(-2/3).*sqrt(AllObs.S);
+        ( (C.thetaA0(:,i)-AllObs.A0Shift)*ones(1,DAll.nt)+AllObs.dA).^(5/3).*AllObs.w.^(-2/3).*sqrt(AllObs.S);
 end
 
 Estimate.QhatPost=mean(C.thetaQ(:,:,C.Nburn+1:end),3);

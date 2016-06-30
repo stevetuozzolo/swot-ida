@@ -76,7 +76,8 @@ for i=1:D.nR,
     ylabel('Frequency')    
 end
 
-Qbar=squeeze(mean(mean(C.thetaAllQ(:,:,C.Nburn+1:end) )));
+% Qbar=squeeze(mean(mean(C.thetaAllQ(:,:,C.Nburn+1:end) )));
+Qbar=squeeze(mean(mean(C.thetaAllQ(:,:,:) )));
 
 figure(6)
 plot(Qbar); grid on;

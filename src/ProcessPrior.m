@@ -239,7 +239,7 @@ end
 if ShowFigs,
 
     %check validity of the n parameterization ...
-    r=3; %reach to check out.
+    r=7; %reach to check out.
 
     Nuse=length(iUse);
     
@@ -253,7 +253,7 @@ if ShowFigs,
     title(['Reach #' num2str(r) ' for na'])
 
     %check validity of the A0 parameterization ...
-    r=2; %reach to check out.
+    r=7; %reach to check out.
     
     figure(12)
     h=CompareLogN(Prior.meanA0(r),Prior.stdA0(r)./Prior.meanA0(r),thetaA0(r,iUse));
@@ -262,6 +262,7 @@ if ShowFigs,
     ylabel(h(2),'Probability')
     xlabel('A_0, m^2')
     title(['Reach #' num2str(r) ' for A0'])
+    legend('Output A0 Histogram','Parameterized A0')
     
     figure(13)
     h=CompareLogN(Prior.meanQbar,Prior.covQbar,thetaQ(r,iUse)); 
@@ -270,6 +271,7 @@ if ShowFigs,
     set(gca,'FontSize',14)
     ylabel('Histogram of the posterior')
     xlabel('Discharge, m^3/s')
+    legend('Output Q Histogram','Parameterized Q')    
     
     figure(14)
     hist(thetax1(r,iUse),35)
@@ -280,6 +282,7 @@ if ShowFigs,
     set(gca,'FontSize',14)
     ylabel('Histogram of the posterior')
     xlabel('x1')
+    legend('Output x1 Histogram','Parameterized x1')
 
     
 end
