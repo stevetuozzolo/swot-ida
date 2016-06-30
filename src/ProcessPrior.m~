@@ -238,7 +238,7 @@ end
 if ShowFigs,
 
     %check validity of the n parameterization ...
-    r=3; %reach to check out.
+    r=7; %reach to check out.
 
     Nuse=length(iUse);
     
@@ -251,7 +251,8 @@ if ShowFigs,
     xlabel('Roughness coefficient parameter, na, [-]')
     title(['Reach #' num2str(r) ' for na'])
 
-    %check validity of the A0 parameterization ...    
+    %check validity of the A0 parameterization ...
+    r=7; %reach to check out.
     
     figure(12)
     h=CompareLogN(Prior.meanAllA0(r),Prior.stdAllA0(r)./Prior.meanAllA0(r),thetaAllA0(r,iUse));
@@ -305,7 +306,6 @@ jmp.A0min=max(allA0min+AllObs.A0Shift,estA0min); %this is in the "estimation" wi
 jmp.nmin=.001; %temporary!
 
 % 5.5 set up prior A0 variable by shifting into estimation window
-Prior.meanA0=Prior.meanAllA0+AllObs.A0Shift;
-Prior.stdA0=Prior.stdAllA0; %not sure that's correct?
+Prior.meanA0=Prior.meanAllA
 
 return

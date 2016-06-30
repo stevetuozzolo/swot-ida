@@ -63,7 +63,7 @@ for i=1:C.N,
     end                    
     
     jmp.record.stdA0(i)=jmp.stdA0;
-    jmp.record.stdna(i)=jmp.stdna; %should change variable name to na
+    jmp.record.stdna(i)=jmp.stdna; %should change variable name from na
     jmp.record.stdx1(i)=jmp.stdx1;
         
     %A0
