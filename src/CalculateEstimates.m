@@ -68,7 +68,7 @@ for r=1:D.nR,
 end
 
 Estimate.QhatAllPrior=1./nhat .* ...
-    (Prior.meanA0*ones(1,DAll.nt)+AllObs.dA).^(5/3).*AllObs.w.^(-2/3).*sqrt(AllObs.S);
+    ( (Prior.meanA0-AllObs.A0Shift) *ones(1,DAll.nt)+AllObs.dA).^(5/3).*AllObs.w.^(-2/3).*sqrt(AllObs.S);
 
 
 %4)   Discharge error budget: all done for Q(nr x nt)
