@@ -12,7 +12,7 @@ plot(C.thetaA0'); grid on;
 title('Baseflow cross-sectional area, m^2')
 subplot(n,1,2)
 plot(C.thetana'); grid on;
-title('Roughness coefficient parameter na')
+title('Roughness coefficient parameter n0')
 subplot(n,1,3)
 plot(C.thetax1'); grid on;
 title('Roughness coefficient parameter x1')
@@ -27,10 +27,15 @@ ylabel('Cross-sectional area, m^2')
 legend([h1; hp; h2;],'Estimate','Prior','True')
 
 figure(3)
-for i=1:D.nR,
+meanA0=Prior.meanA0;
+covA0=Prior.stdA0./meanA0;
+vA0=(covA0.*meanA0).^2;
+[muA0,sigmaA0] = logninvstat(meanA0,vA0);
+
+for i=1:D.nR,    
     subplot(1,D.nR,i)
     x=0:max(C.thetaA0(i,:));
-    y=normpdf(x,Prior.meanA0(i),Prior.stdA0(i));
+    y=lognpdf(x,muA0(i),sigmaA0(i));
     plot(x,y/max(y)*C.N/20,'r--','LineWidth',2); hold on;
     hist(C.thetaA0(i,C.Nburn+1:end),50); 
     set(gca,'FontSize',14)
@@ -122,5 +127,16 @@ end
 r=1;
 figure(11)
 loglog(E.AllQ(r,:)',AllObs.w(r,:)','+');
+xlabel('Estimated Discharge, m^3/s')
+ylabel('Width, m')
+title(['AHG for Reach #' num2str(r)])
+
+figure(15)
+r=1:4;
+plot(E.AllQ(r,:)',E.nhatAll(r,:)','o')
+set(gca,'FontSize',14)
+xlabel('Estimated Discharge, m^3/s')
+ylabel('Estimated n, [-]');
+
 
 return

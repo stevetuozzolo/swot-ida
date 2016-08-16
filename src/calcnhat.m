@@ -1,4 +1,4 @@
-function nhat = calcnhat(w,h,wa,ha,c1,x1,na,BjerklienOpt)
+function nhat = calcnhat(w,h,hmin,wa,ha,c1,x1,na,BjerklienOpt)
 
 switch BjerklienOpt
     case 1
@@ -6,7 +6,7 @@ switch BjerklienOpt
     case 2
         nhat=c1.*( h./ha ).^x1 .* na; %updated if either nau or x1u change
     case 3
-        nhat=na .* (h-min(h)+.1).^x1;
+        nhat=na .* (h-hmin+.1).^x1;
 end
 
 return

@@ -34,7 +34,7 @@ pu3=lognpdf(-thetaux1,mux1,sigmax1);
 %     pu4=exp(-0.5.*(thetauq-Prior.meanq)'*diag(Prior.stdq.^-2)*(thetauq-Prior.meanq));
 % end
 
-fu=CalcLklhd(Obs,thetauA0,thetauna,thetaux1,D,Prior,Delta,DeltaA,B,thetauq,BjerklienOpt);
+fu=CalcLklhd(Obs,AllObs,thetauA0,thetauna,thetaux1,D,Prior,Delta,DeltaA,B,thetauq,BjerklienOpt);
 
 % if Prior.meanq==-1,
 %     Prior.meanq=dQdx+dAdt;
@@ -71,7 +71,7 @@ for i=1:C.N,
     thetavA0(thetavA0<jmp.A0min)=jmp.A0min(thetavA0<jmp.A0min);
 %     pv1=exp(-0.5.*(thetavA0-Prior.meanA0)'*diag(Prior.stdA0.^-2)*(thetavA0-Prior.meanA0));    
     pv1=lognpdf(thetavA0,muA0,sigmaA0);
-    fv=CalcLklhd(Obs,thetavA0,thetauna,thetaux1,D,Prior,Delta,DeltaA,B,thetauq,BjerklienOpt);    
+    fv=CalcLklhd(Obs,AllObs,thetavA0,thetauna,thetaux1,D,Prior,Delta,DeltaA,B,thetauq,BjerklienOpt);    
 
     MetRatio=exp(fv-fu)*exp(sum(log(pv1))-sum(log(pu1)));
     if MetRatio>R.u1(i),
@@ -84,7 +84,7 @@ for i=1:C.N,
     thetavna=thetauna+jmp.stdna.*R.z2(:,i);
     thetavna(thetavna<jmp.nmin)=jmp.nmin;
     pv2=lognpdf(thetavna,muna,sigmana);
-    fv=CalcLklhd(Obs,thetauA0,thetavna,thetaux1,D,Prior,Delta,DeltaA,B,thetauq,BjerklienOpt);    
+    fv=CalcLklhd(Obs,AllObs,thetauA0,thetavna,thetaux1,D,Prior,Delta,DeltaA,B,thetauq,BjerklienOpt);    
 
     MetRatio=exp(fv-fu)*exp(sum(log(pv2))-sum(log(pu2)));
     if MetRatio>R.u2(i),
@@ -97,7 +97,7 @@ for i=1:C.N,
     thetavx1=thetaux1+jmp.stdx1.*R.z3(:,i);
 %     thetavna(thetavna<jmp.nmin)=jmp.nmin; %use no limits for now
     pv3=lognpdf(-thetavx1,mux1,sigmax1);
-    fv=CalcLklhd(Obs,thetauA0,thetauna,thetavx1,D,Prior,Delta,DeltaA,B,thetauq,BjerklienOpt);    
+    fv=CalcLklhd(Obs,AllObs,thetauA0,thetauna,thetavx1,D,Prior,Delta,DeltaA,B,thetauq,BjerklienOpt);    
 
     MetRatio=exp(fv-fu)*exp(sum(log(pv3))-sum(log(pu3)));
     if MetRatio>R.u3(i),
@@ -110,7 +110,7 @@ for i=1:C.N,
 %         thetavq=thetauq+jmp.stdq.*R.z3(:,i);
 %         thetavq(thetavq<jmp.qmin)=jmp.qmin;
 %         pv3=exp(-0.5.*(thetavq-Prior.meanq)'*diag(Prior.stdq.^-2)*(thetavq-Prior.meanq));
-%         fv=CalcLklhd(Obs,thetauA0,thetaun,D,Prior,Delta,DeltaA,B,thetavq);    
+%         fv=CalcLklhd(Obs,AllObs,thetauA0,thetaun,D,Prior,Delta,DeltaA,B,thetavq);    
 % 
 %         MetRatio=exp(fv-fu)*pv3/pu4;
 %         if MetRatio>R.u3(i),

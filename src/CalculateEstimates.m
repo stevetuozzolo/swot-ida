@@ -15,14 +15,10 @@ Estimate.stdx1Post=sqrt(diag(Estimate.Cx1));
 
 c1=0.85;
 for r=1:D.nR,
-%     Estimate.nhat(r,:)=c1.*( Obs.w(r,:).*Obs.h(r,:)./Prior.Wa(r)./Prior.Ha(r) ).^Estimate.x1hat(r) .* Estimate.nahat(r);
-    Estimate.nhat(r,:)=calcnhat(Obs.w(r,:),Obs.h(r,:),Prior.Wa(r),Prior.Ha(r),c1,...
+    Estimate.nhat(r,:)=calcnhat(Obs.w(r,:),Obs.h(r,:),AllObs.hmin(r),Prior.Wa(r),Prior.Ha(r),c1,...
         Estimate.x1hat(r),Estimate.nahat(r),BjerklienOpt);
-%     nhat(r,:) =
-%     calcnhat(Obs.w(r,:),Obs.h(r,:),Prior.Wa(r),Prior.Ha(r),c1,x1(r),na(r),BjerklienOpt);
     
-%     Estimate.nhatAll(r,:)=c1.*( AllObs.w(r,:).*AllObs.h(r,:)./Prior.Wa(r)./Prior.Ha(r) ).^Estimate.x1hat(r) .* Estimate.nahat(r);
-    Estimate.nhatAll(r,:)=calcnhat(AllObs.w(r,:),AllObs.h(r,:),Prior.Wa(r),Prior.Ha(r),c1,...
+    Estimate.nhatAll(r,:)=calcnhat(AllObs.w(r,:),AllObs.h(r,:),AllObs.hmin(r),Prior.Wa(r),Prior.Ha(r),c1,...
         Estimate.x1hat(r),Estimate.nahat(r),BjerklienOpt);    
 end
 
@@ -34,10 +30,9 @@ end
 %2) calculate the Q chain, and estimate mean and std
 for i=1:C.N,
     for r=1:D.nR,
-%         nhat(r,:)=c1.*( Obs.w(r,:).*Obs.h(r,:)./Prior.Wa(r)./Prior.Ha(r) ).^C.thetax1(r,i) .* C.thetana(r,i);
-        nhat(r,:)=calcnhat(Obs.w(r,:),Obs.h(r,:),Prior.Wa(r),Prior.Ha(r),c1,...
+        nhat(r,:)=calcnhat(Obs.w(r,:),Obs.h(r,:),AllObs.hmin(r),Prior.Wa(r),Prior.Ha(r),c1,...
             C.thetax1(r,i),C.thetana(r,i),BjerklienOpt);    
-        nhatAll(r,:)=calcnhat(AllObs.w(r,:),AllObs.h(r,:),Prior.Wa(r),Prior.Ha(r),c1,...
+        nhatAll(r,:)=calcnhat(AllObs.w(r,:),AllObs.h(r,:),AllObs.hmin(r),Prior.Wa(r),Prior.Ha(r),c1,...
             C.thetax1(r,i),C.thetana(r,i),BjerklienOpt);    
     end
     
@@ -52,8 +47,7 @@ Estimate.QstdPost=std(C.thetaQ(:,:,C.Nburn+1:end),[],3);
 
 %3) Calculate Q prior estimate
 for r=1:D.nR,
-%     nhat(r,:)=c1.*( Obs.w(r,:).*Obs.h(r,:)./Prior.Wa(r)./Prior.Ha(r) ).^Prior.meanx1(r) .* Prior.meanna(r);
-    nhat(r,:)=calcnhat(Obs.w(r,:),Obs.h(r,:),Prior.Wa(r),Prior.Ha(r),c1,...
+    nhat(r,:)=calcnhat(Obs.w(r,:),Obs.h(r,:),AllObs.hmin(r),Prior.Wa(r),Prior.Ha(r),c1,...
         Prior.meanx1(r),Prior.meanna(r),BjerklienOpt);            
 end
 
@@ -62,8 +56,7 @@ Estimate.QhatPrior=1./nhat .* ...
 
 clear nhat
 for r=1:D.nR,
-%     nhat(r,:)=c1.*( AllObs.w(r,:).*AllObs.h(r,:)./Prior.Wa(r)./Prior.Ha(r) ).^Prior.meanx1(r) .* Prior.meanna(r);
-    nhat(r,:)=calcnhat(AllObs.w(r,:),AllObs.h(r,:),Prior.Wa(r),Prior.Ha(r),c1,...
+    nhat(r,:)=calcnhat(AllObs.w(r,:),AllObs.h(r,:),AllObs.hmin(r),Prior.Wa(r),Prior.Ha(r),c1,...
         Prior.meanx1(r),Prior.meanna(r),BjerklienOpt);                
 end
 
