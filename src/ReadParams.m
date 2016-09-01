@@ -13,7 +13,6 @@ if fgetl(fid)~=-1 %if extra line in param file for time step size
 else
     Exp.tStep=1; %default to one day
 end
-fclose(fid);
 
 Exp.tUse=(round(tUse1/Exp.tStep):1:round(tUseEnd/Exp.tStep))*Exp.tStep;
 Exp.Est_nt=length(Exp.tUse);
