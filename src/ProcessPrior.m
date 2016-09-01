@@ -297,7 +297,7 @@ for i=1:D.nR,
 end
 
 % 5.3 shift that the "all" A0 into the estimate window
-i1=find(DAll.t==D.t(1));
+i1=find(abs(DAll.t-D.t(1))<(D.t(2)-D.t(1))/2);
 AllObs.A0Shift=AllObs.dA(:,i1); %this is area at first estimation time > than time 0
 
 % 5.4 for future reference save the more restrictive
