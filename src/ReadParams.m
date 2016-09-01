@@ -17,8 +17,6 @@ end
 Exp.tUse=(round(tUse1/Exp.tStep):1:round(tUseEnd/Exp.tStep))*Exp.tStep;
 Exp.Est_nt=length(Exp.tUse);
 
-
-
 fclose(fid);
 
 return
