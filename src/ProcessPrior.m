@@ -29,7 +29,7 @@ for r=1:DAll.nR,
     if BjerklienOpt < 3,
         c1=0.85;
         meanx1(r)=2.257+1.308*log10(DB.chiH(r))+0.99*log10(DB.chiW(r))+0.435*log10(DB.Sa(r));
-        meanna(r)=0.22*Sa^0.18; %this is "na" in Bjerklie's notation
+        meanna(r)=0.22*DB.Sa(r)^0.18; %this is "na" in Bjerklie's notation
     elseif BjerklienOpt == 3,
         c1=nan;
         meanx1(r)=-0.09; %these values computed across 10 rivers, all reaches
