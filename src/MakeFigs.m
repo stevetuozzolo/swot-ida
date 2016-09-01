@@ -124,19 +124,38 @@ if DAll.t(1) > datenum(1900,0,0,0,0,0),
     datetick('x','mmm-dd-hh:MM','keepticks')
 end
 
-r=1;
+r=D.nR;
 figure(11)
+subplot(121)
 loglog(E.AllQ(r,:)',AllObs.w(r,:)','+');
 xlabel('Estimated Discharge, m^3/s')
 ylabel('Width, m')
 title(['AHG for Reach #' num2str(r)])
 
+subplot(122)
+plot(AllObs.h(r,:)',AllObs.w(r,:)','+');
+xlabel('Height, m')
+ylabel('Width, m')
+title(['Stage-area for Reach #' num2str(r)])
+
+iPos=AllObs.S>1E-5; %should make this a variable to be passed in... and should get the "true" slopes added to input file
+nTrue=nan(size(AllTruth.Q));
+ATrue=AllTruth.A0'*ones(1,DAll.nt)+AllTruth.dA;
+nTrue(iPos)=1./AllTruth.Q(iPos).*ATrue(iPos).^(5/3).*AllTruth.W(iPos).^(-2/3).*(AllObs.S(iPos)).^.5;
+
 figure(15)
-r=1:4;
+r=1:DAll.nR;
+subplot(121),
 plot(E.AllQ(r,:)',E.nhatAll(r,:)','o')
 set(gca,'FontSize',14)
 xlabel('Estimated Discharge, m^3/s')
 ylabel('Estimated n, [-]');
+subplot(122)
+plot(AllTruth.Q(r,:)',nTrue(r,:)','o')
+set(gca,'FontSize',14)
+xlabel('True Discharge, m^3/s')
+ylabel('"True" n, [-]');
+subplot(122)
 
 
 return
