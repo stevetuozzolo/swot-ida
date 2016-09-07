@@ -29,7 +29,7 @@ for r=1:DAll.nR,
     if BjerklienOpt < 3,
         c1=0.85;
         meanx1(r)=2.257+1.308*log10(DB.chiH(r))+0.99*log10(DB.chiW(r))+0.435*log10(DB.Sa(r));
-        meanna(r)=0.22*Sa^0.18; %this is "na" in Bjerklie's notation
+        meanna(r)=0.22*DB.Sa(r)^0.18; %this is "na" in Bjerklie's notation
     elseif BjerklienOpt == 3,
         c1=nan;
         meanx1(r)=-0.09; %these values computed across 10 rivers, all reaches
@@ -297,7 +297,7 @@ for i=1:D.nR,
 end
 
 % 5.3 shift that the "all" A0 into the estimate window
-i1=find(DAll.t==D.t(1));
+i1=find(abs(DAll.t-D.t(1))<(D.t(2)-D.t(1))/2);
 AllObs.A0Shift=AllObs.dA(:,i1); %this is area at first estimation time > than time 0
 
 % 5.4 for future reference save the more restrictive
