@@ -7,9 +7,9 @@ function [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,DAll,Obs,D,ShowFigs,Bjerkl
 allA0min=nan(DAll.nR,1);
 for i=1:DAll.nR,
     if min(AllObs.dA(i,:))>=0
-        allA0min(i,1)=0;
+        allA0min(i,1)=1e-3;
     else
-        allA0min(i,1)=-min(AllObs.dA(i,:));
+        allA0min(i,1)=-min(AllObs.dA(i,:))+1e-3;
     end
 end
 
