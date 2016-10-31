@@ -230,8 +230,7 @@ Prior.meanx1=mean(thetax1(:,iUse),2);  %should check these parameters actually f
 Prior.stdx1=std(thetax1(:,iUse),[],2);
 
 for r=1:DAll.nR,
-%     nhat=c1.*( AllObs.w(r,:).*AllObs.h(r,:)./Prior.Wa(r)./Prior.Ha(r) ).^Prior.meanx1(r) .* Prior.meanna(r); %updated if either nau or x1u change
-    nhat = calcnhat(AllObs.w(j,:),AllObs.h(j,:),AllObs.hmin(j),Prior.Wa(j),Prior.Ha(j),c1,Prior.meanx1(r),Prior.meanna(r),BjerklienOpt);
+    nhat = calcnhat(AllObs.w(r,:),AllObs.h(r,:),AllObs.hmin(r),Prior.Wa(r),Prior.Ha(r),c1,Prior.meanx1(r),Prior.meanna(r),BjerklienOpt);
     QPrior(r,:)=1./nhat.*(Prior.meanAllA0(r)+AllObs.dA(r,:)).^(5/3).*AllObs.w(r,:).^(-2/3).*sqrt(AllObs.S(r,:)) ;
 end
 
