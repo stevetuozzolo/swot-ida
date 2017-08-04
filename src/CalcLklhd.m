@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 function [f,dQdxv,dAdtv,Cf,Qv]=CalcLklhd(Obs,A0,n,D,Prior,Delta,DeltaA,B,qhatv)
+=======
+function [f,dQdxv,dAdtv,Cf,Qv]=CalcLklhd(Obs,A0,na,x1,D,Prior,Delta,DeltaA,B,qhatv,BjerklienOpt)
+>>>>>>> varnQbarPrior
 
 %All vectors ordered "space-first"
 % theta(1)=theta(r1,t1)
@@ -12,7 +16,15 @@ N=D.nR*(D.nt-1); %total number of "equations" / constraints
 M=D.nR*D.nt;
 
 A0v=reshape((A0*ones(1,D.nt))',D.nR*D.nt,1);
-nv=reshape((n*ones(1,D.nt))',D.nR*D.nt,1);
+
+c1=0.85;
+for r=1:D.nR,
+%     nhat(r,:)=c1.*( Obs.w(r,:).*Obs.h(r,:)./Prior.Wa(r)./Prior.Ha(r) ).^x1(r) .* na(r);
+    nhat(r,:) = calcnhat(Obs.w(r,:),Obs.h(r,:),Prior.Wa(r),Prior.Ha(r),c1,x1(r),na(r),BjerklienOpt);
+end
+
+nv=reshape(nhat',D.nR*D.nt,1);
+% nv=
 Qv=1./nv.*(A0v+Obs.dAv).^(5/3).*Obs.wv.^(-2/3).*sqrt(Obs.Sv);
 
 if any(Obs.hv)<0 || any(A0v)<0 || any(Obs.Sv)<0,
@@ -43,13 +55,27 @@ J=[JS JdA Jw];
 CdQ=J*Obs.CSdAw*J';
 
 % %2.1.4) Calculate error covariance due to Manning's error
+<<<<<<< HEAD
 CdQm=Delta*(eye(M).*Prior.eQm^2)*Delta';
 
 %2.3) Final covariance matrix calculation
 Cf=Obs.CA+CdQ+Prior.Cqf+CdQm;
+=======
+% CdQm=Delta*(eye(M).*Prior.eQm^2)*Delta'; 
+
+%2.3) Final covariance matrix calculation
+Cf=Obs.CA+CdQ+Prior.Cqf; %+CdQm;
+>>>>>>> varnQbarPrior
 
 %3) Calculate likelihood
-Theta=dQdxv+dAdtv-qhatv;
-f=-0.5.*Theta'/Cf*Theta;
+Theta=dQdxv+dAdtv; %-qhatv; %omit q estimation for now
+
+if isnan(rcond(Cf))
+    f=0;
+else
+    f=-0.5.*Theta'/Cf*Theta;
+end
+
+
 
 return

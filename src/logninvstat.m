@@ -10,7 +10,12 @@ function [mu,sigma] = logninvstat(m,v)
 %v is the variance of x, and mu is the mean of log(x) and sigma is the
 %standard deviation of log(x).
 
+<<<<<<< HEAD
 mu = log((m^2)/sqrt(v+m^2));
 sigma = sqrt(log(v/(m^2)+1));
+=======
+mu = log((m.^2)./sqrt(v+m.^2));
+sigma = sqrt(log(v./(m.^2)+1));
+>>>>>>> varnQbarPrior
 
 return

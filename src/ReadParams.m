@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 function [Chain,Prior,jmp,R,Exp] = ReadParams(fname,D)
+=======
+function [Chain,Prior,R,Exp] = ReadParams(fname)
+>>>>>>> varnQbarPrior
 
 fid=fopen(fname,'r');
 fgetl(fid); Chain.N=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fgetl(fid); Chain.Nburn=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fgetl(fid); R.Seed=fscanf(fid,'%f',1); fscanf(fid,'\n');
+<<<<<<< HEAD
 fgetl(fid); Chain.Estimateq=fscanf(fid,'%f',1); fscanf(fid,'\n');
 
 fgetl(fid); Exp.Est_nt=fscanf(fid,'%f',1); fscanf(fid,'\n');
@@ -25,6 +30,13 @@ fgetl(fid); jmp.stdq=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fgetl(fid); jmp.qmin=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fgetl(fid); Prior.eQm=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fgetl(fid); jmp.stdQ=fscanf(fid,'%f',1); fscanf(fid,'\n');
+=======
+
+fgetl(fid); tUse1=fscanf(fid,'%f',1); tUseEnd=fscanf(fid,'%f',1); fscanf(fid,'\n');
+Exp.tUse=tUse1:tUseEnd;
+Exp.Est_nt=length(Exp.tUse);
+
+>>>>>>> varnQbarPrior
 fgetl(fid); Prior.meanQbar=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fgetl(fid); Prior.covQbar=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fclose(fid);
