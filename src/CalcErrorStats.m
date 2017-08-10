@@ -6,13 +6,19 @@ QhatAvg=mean(E.AllQ,1);
 
 Stats.RMSE=sqrt(mean( (Qt-QhatAvg).^2 ) );
 Stats.rRMSE=sqrt(mean( (  (Qt-QhatAvg)./Qt   ).^2 ) );
+Stats.nRMSE=Stats.RMSE/mean(Qt);
 
 r=QhatAvg-Qt;
 logr=log(QhatAvg)-log(Qt);
 
-Stats.MSC=log(  sum((Qt-mean(Qt)).^2)/sum(r.^2) -2*2/DAll.nt  );
+Stats.NSE=1-sum(r.^2)/sum( (Qt-mean(Qt)).^2 );
+Stats.VE=1- sum(abs(r))/sum(Qt);
+
 Stats.bias=mean(r);
 Stats.stdresid=std(r);
+Stats.nbias = Stats.bias/mean(Qt);
+
+Stats.MSC=log(  sum((Qt-mean(Qt)).^2)/sum(r.^2) -2*2/DAll.nt  );
 Stats.meanLogRes=mean(logr);
 Stats.stdLogRes=std(logr);
 Stats.meanRelRes=mean(r./Qt);

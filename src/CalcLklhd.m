@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-function [f,dQdxv,dAdtv,Cf,Qv]=CalcLklhd(Obs,A0,n,D,Prior,Delta,DeltaA,B,qhatv)
-=======
-function [f,dQdxv,dAdtv,Cf,Qv]=CalcLklhd(Obs,A0,na,x1,D,Prior,Delta,DeltaA,B,qhatv,BjerklienOpt)
->>>>>>> varnQbarPrior
+function [f,dQdxv,dAdtv,Cf,Qv]=CalcLklhd(Obs,AllObs,A0,na,x1,D,Prior,Delta,DeltaA,B,qhatv,BjerklienOpt)
 
 %All vectors ordered "space-first"
 % theta(1)=theta(r1,t1)
@@ -19,8 +15,7 @@ A0v=reshape((A0*ones(1,D.nt))',D.nR*D.nt,1);
 
 c1=0.85;
 for r=1:D.nR,
-%     nhat(r,:)=c1.*( Obs.w(r,:).*Obs.h(r,:)./Prior.Wa(r)./Prior.Ha(r) ).^x1(r) .* na(r);
-    nhat(r,:) = calcnhat(Obs.w(r,:),Obs.h(r,:),Prior.Wa(r),Prior.Ha(r),c1,x1(r),na(r),BjerklienOpt);
+    nhat(r,:) = calcnhat(Obs.w(r,:),Obs.h(r,:),AllObs.hmin(r),Prior.Wa(r),Prior.Ha(r),c1,x1(r),na(r),BjerklienOpt);
 end
 
 nv=reshape(nhat',D.nR*D.nt,1);
@@ -55,17 +50,10 @@ J=[JS JdA Jw];
 CdQ=J*Obs.CSdAw*J';
 
 % %2.1.4) Calculate error covariance due to Manning's error
-<<<<<<< HEAD
-CdQm=Delta*(eye(M).*Prior.eQm^2)*Delta';
-
-%2.3) Final covariance matrix calculation
-Cf=Obs.CA+CdQ+Prior.Cqf+CdQm;
-=======
 % CdQm=Delta*(eye(M).*Prior.eQm^2)*Delta'; 
 
 %2.3) Final covariance matrix calculation
 Cf=Obs.CA+CdQ+Prior.Cqf; %+CdQm;
->>>>>>> varnQbarPrior
 
 %3) Calculate likelihood
 Theta=dQdxv+dAdtv; %-qhatv; %omit q estimation for now
