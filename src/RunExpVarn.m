@@ -24,6 +24,8 @@ AllTruth=ReadTruth (TruthFile,DAll);
 Obs.S(Obs.S<Smin)=Smin;
 AllObs.S(AllObs.S<Smin)=Smin;
 
+AllObs.hmin=min(AllObs.h,[],2);
+
 if ReRunPrior,
     [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,DAll,Obs,D,ShowFigs,BjerklienOpt); 
     save([ RunDir '/Prior.mat'],'Prior','jmp','AllObs');
@@ -44,7 +46,7 @@ Err=CalcErrorStats(AllTruth,Estimate,DAll);
 Err=DispRMSEStats(Err,Truth,Prior,Estimate);
 
 if ShowFigs,
-    MakeFigs(D,Truth,Prior,Chain,Estimate,Err,AllTruth,DAll);
+    MakeFigs(D,Truth,Prior,Chain,Estimate,Err,AllTruth,DAll,AllObs);
 end
 
 % WriteSummary (R,Err,Estimate,RunDir);

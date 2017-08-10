@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-function [Prior,jmp,AllObs]=ProcessPrior(Prior,Obs,D,AllObs,jmp,DAll)
-
-%% 1 determine minimum A0 values: note these are different for all and estimation window
-% 1.1 calculate minimum A0 values -- this is for "All"
-for i=1:D.nR,
-=======
 function [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,DAll,Obs,D,ShowFigs,BjerklienOpt)
 
 
@@ -13,82 +6,13 @@ function [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,DAll,Obs,D,ShowFigs,Bjerkl
 % bottom
 allA0min=nan(DAll.nR,1);
 for i=1:DAll.nR,
->>>>>>> varnQbarPrior
     if min(AllObs.dA(i,:))>=0
-        allA0min(i,1)=0;
+        allA0min(i,1)=1e-3;
     else
-        allA0min(i,1)=-min(AllObs.dA(i,:));
+        allA0min(i,1)=-min(AllObs.dA(i,:))+1e-3;
     end
 end
 
-<<<<<<< HEAD
-% 1.2 calculate minimum values for A0 for the estimation window
-for i=1:D.nR,
-    if min(Obs.dA(i,:))>=0
-        estA0min(i,1)=0;
-    else
-        estA0min(i,1)=-min(Obs.dA(i,:));
-    end
-end
-
-% 1.3 shift that the "all" A0 into the estimate window
-i1=find(DAll.t==D.t(1));
-AllObs.A0Shift=AllObs.dA(:,i1); %this is area at first estimation time > than time 0
-
-% 1.4 for future reference save the more restrictive
-jmp.A0min=max(allA0min+AllObs.A0Shift,estA0min);
-
-%% 2 simulated distribution of A0, from the AllObs perspective
-N=1E4;
-
-v=(Prior.covQbar*Prior.meanQbar)^2;
-[mu,sigma] = logninvstat(Prior.meanQbar,v);
-Qbar=lognrnd(mu,sigma,1,N);
-
-dAbar=mean(AllObs.dA,2);
-Sbar=mean(AllObs.S,2);
-wbar=mean(AllObs.w,2);
-
-for i=1:N,
-    A0bar(:,i)= ( Qbar(i).*Prior.meann.*wbar.^(2/3).*Sbar.^(-.5) ).^(3/5)-dAbar;
-end
-
-j=all(A0bar>allA0min*ones(1,N));
-
-%switch everything to estimation window perspective
-A0bar=A0bar+AllObs.A0Shift*ones(1,N);
-
-Prior.meanA0=mean(A0bar(:,j),2);
-Prior.stdA0=std(A0bar(:,j),[],2);
-
-%% 3 move A0 back to discharge to get prior for baseflow
-Qavg=nan(N,D.nt);
-
-for i=1:N,
-    Q(:,:,i) = 1./(Prior.meann*ones(1,D.nt)) .* ...
-        (A0bar(:,i)*ones(1,D.nt)+Obs.dA).^(5/3).*Obs.w.^(-2/3).*sqrt(Obs.S) ;
-    Qavg(i,:)=squeeze(mean(Q(:,:,i),1));
-    Qbase(i)=min(Qavg(i,:));
-    QstAvg(i)=mean(Qavg(i,:));
-end
-
-Prior.meanQbase=mean(Qbase(j));
-Prior.stdQbase=std(Qbase(j));
-
-return
-
-% the beginning of an attempt to do part 2 better... abandoned for now...
-% see notes on October 14, 2015
-% out!
-% r=1;
-% i=1;
-% A0max=10*max(Obs.dA(1,:));
-% Ntry=100;
-% A0try=linspace(allA0min(1),A0max,Ntry);
-% k=1;
-% QbarTry(k)=mean(1./Prior.meann(r).* (A0try(k)*ones(1,D.nt)+Obs.dA(r,:)).^(5/3) .* ...
-%     Obs.w(r,:).^(-2/3).* Obs.S(r,:).^(1/2) );
-=======
 %% 2 Bjerklie calcs
 
 Prior.Wa=mean(AllObs.w,2);
@@ -105,7 +29,7 @@ for r=1:DAll.nR,
     if BjerklienOpt < 3,
         c1=0.85;
         meanx1(r)=2.257+1.308*log10(DB.chiH(r))+0.99*log10(DB.chiW(r))+0.435*log10(DB.Sa(r));
-        meanna(r)=0.22*Sa^0.18; %this is "na" in Bjerklie's notation
+        meanna(r)=0.22*DB.Sa(r)^0.18; %this is "na" in Bjerklie's notation
     elseif BjerklienOpt == 3,
         c1=nan;
         meanx1(r)=-0.09; %these values computed across 10 rivers, all reaches
@@ -113,6 +37,7 @@ for r=1:DAll.nR,
     end
 end
 
+%need to move these to be inputs
 covna=.05;
 covx1=.25;
 
@@ -122,8 +47,6 @@ v=(covna.*meanna).^2; %ok, could just do Prior.stdn^2...
 [mun,sigman] = logninvstat(meanna,v);
 
 %x1 calcs: note the pdf is actually for -x1 
-% covx1=0.25; %move this to be a prior input
-% covx1=1; %move this to be a prior input
 v=(covx1.*meanx1).^2;
 [mux1,sigmax1] = logninvstat(meanx1,v);
 
@@ -151,8 +74,8 @@ na1(DAll.nR)=0;
 na2(DAll.nR)=0;
 na3(DAll.nR)=0;
 
-thetaA0=nan(DAll.nR,N);
-thetaA0(:,1)=A0u;
+thetaAllA0=nan(DAll.nR,N);
+thetaAllA0(:,1)=A0u;
 thetana=nan(DAll.nR,N);
 thetana(:,1)=nau;
 thetax1=nan(DAll.nR,N);
@@ -169,7 +92,7 @@ for j=1:DAll.nR,
         stop=1;
     end
             
-    A0u=3*thetaA0(j,1); %the initial value is the minimum 
+    A0u=3*thetaAllA0(j,1); %the initial value is the minimum 
     nau=thetana(j,1);
     x1u=thetax1(j,1);
     
@@ -185,7 +108,7 @@ for j=1:DAll.nR,
     pu3=lognpdf(-x1u,mux1(j),sigmax1(j));     
     
 %     nhatu=c1.*( AllObs.w(j,:).*AllObs.h(j,:)./Prior.Wa(j)./Prior.Ha(j) ).^x1u .* nau; %updated if either nau or x1u change
-    nhatu = calcnhat(AllObs.w(j,:),AllObs.h(j,:),Prior.Wa(j),Prior.Ha(j),c1,x1u,nau,BjerklienOpt);
+    nhatu = calcnhat(AllObs.w(j,:),AllObs.h(j,:),AllObs.hmin(j),Prior.Wa(j),Prior.Ha(j),c1,x1u,nau,BjerklienOpt);
     
     Qu=mean( 1./nhatu.*(A0u+AllObs.dA(j,:)).^(5/3).*AllObs.w(j,:).^(-2/3).*sqrt(AllObs.S(j,:)) );
     
@@ -232,7 +155,7 @@ for j=1:DAll.nR,
         end
         
 %         nhatv=c1.*( AllObs.w(j,:).*AllObs.h(j,:)./Prior.Wa(j)./Prior.Ha(j) ).^x1u .* nav; %updated if either nau or x1u change
-        nhatv = calcnhat(AllObs.w(j,:),AllObs.h(j,:),Prior.Wa(j),Prior.Ha(j),c1,x1u,nav,BjerklienOpt);
+        nhatv = calcnhat(AllObs.w(j,:),AllObs.h(j,:),AllObs.hmin(j),Prior.Wa(j),Prior.Ha(j),c1,x1u,nav,BjerklienOpt);
 
         Qv = mean( 1./nhatv.*(A0u+AllObs.dA(j,:)).^(5/3).*AllObs.w(j,:).^(-2/3).*sqrt(AllObs.S(j,:)) );
         fv=lognpdf(Qv,muQbar,sigmaQbar);
@@ -256,7 +179,7 @@ for j=1:DAll.nR,
         end
         
 %         nhatv=c1.*( AllObs.w(j,:).*AllObs.h(j,:)./Prior.Wa(j)./Prior.Ha(j) ).^x1v .* nau; %updated if either nau or x1u change
-        nhatv = calcnhat(AllObs.w(j,:),AllObs.h(j,:),Prior.Wa(j),Prior.Ha(j),c1,x1v,nau,BjerklienOpt);
+        nhatv = calcnhat(AllObs.w(j,:),AllObs.h(j,:),AllObs.hmin(j),Prior.Wa(j),Prior.Ha(j),c1,x1v,nau,BjerklienOpt);
 
         Qv = mean( 1./nhatv.*(A0u+AllObs.dA(j,:)).^(5/3).*AllObs.w(j,:).^(-2/3).*sqrt(AllObs.S(j,:)) );
         fv=lognpdf(Qv,muQbar,sigmaQbar);
@@ -273,7 +196,7 @@ for j=1:DAll.nR,
         
         
         %store
-        thetaA0(j,i)=A0u;    
+        thetaAllA0(j,i)=A0u;    
         thetana(j,i)=nau;    
         thetax1(j,i)=x1u;    
         thetaQ(j,i)=Qu;
@@ -299,17 +222,16 @@ end
 iUse=N/5+1:N;
 
 %% 4 posterior Q estimation
-Prior.meanA0=mean(thetaA0(:,iUse),2);
-Prior.stdA0=std(thetaA0(:,iUse),[],2);
+Prior.meanAllA0=mean(thetaAllA0(:,iUse),2);
+Prior.stdAllA0=std(thetaAllA0(:,iUse),[],2);
 Prior.meanna=mean(thetana(:,iUse),2);  %should check these parameters actually fit the posterior...
 Prior.stdna=std(thetana(:,iUse),[],2);
 Prior.meanx1=mean(thetax1(:,iUse),2);  %should check these parameters actually fit the posterior...
 Prior.stdx1=std(thetax1(:,iUse),[],2);
 
 for r=1:DAll.nR,
-%     nhat=c1.*( AllObs.w(r,:).*AllObs.h(r,:)./Prior.Wa(r)./Prior.Ha(r) ).^Prior.meanx1(r) .* Prior.meanna(r); %updated if either nau or x1u change
-    nhat = calcnhat(AllObs.w(j,:),AllObs.h(j,:),Prior.Wa(j),Prior.Ha(j),c1,Prior.meanx1(r),Prior.meanna(r),BjerklienOpt);
-    QPrior(r,:)=1./nhat.*(Prior.meanA0(r)+AllObs.dA(r,:)).^(5/3).*AllObs.w(r,:).^(-2/3).*sqrt(AllObs.S(r,:)) ;
+    nhat = calcnhat(AllObs.w(r,:),AllObs.h(r,:),AllObs.hmin(r),Prior.Wa(r),Prior.Ha(r),c1,Prior.meanx1(r),Prior.meanna(r),BjerklienOpt);
+    QPrior(r,:)=1./nhat.*(Prior.meanAllA0(r)+AllObs.dA(r,:)).^(5/3).*AllObs.w(r,:).^(-2/3).*sqrt(AllObs.S(r,:)) ;
 end
 
 if ShowFigs,
@@ -328,16 +250,16 @@ if ShowFigs,
     xlabel('Roughness coefficient parameter, na, [-]')
     title(['Reach #' num2str(r) ' for na'])
 
-    %check validity of the A0 parameterization ...
-    r=2; %reach to check out.
+    %check validity of the A0 parameterization ...    
     
     figure(12)
-    h=CompareLogN(Prior.meanA0(r),Prior.stdA0(r)./Prior.meanA0(r),thetaA0(r,iUse));
+    h=CompareLogN(Prior.meanAllA0(r),Prior.stdAllA0(r)./Prior.meanAllA0(r),thetaAllA0(r,iUse));
     set(gca,'FontSize',14)
     ylabel(h(1),'Histogram of the posterior')
     ylabel(h(2),'Probability')
     xlabel('A_0, m^2')
     title(['Reach #' num2str(r) ' for A0'])
+    legend('Output A0 Histogram','Parameterized A0')
     
     figure(13)
     h=CompareLogN(Prior.meanQbar,Prior.covQbar,thetaQ(r,iUse)); 
@@ -346,6 +268,7 @@ if ShowFigs,
     set(gca,'FontSize',14)
     ylabel('Histogram of the posterior')
     xlabel('Discharge, m^3/s')
+    legend('Output Q Histogram','Parameterized Q')    
     
     figure(14)
     hist(thetax1(r,iUse),35)
@@ -356,6 +279,7 @@ if ShowFigs,
     set(gca,'FontSize',14)
     ylabel('Histogram of the posterior')
     xlabel('x1')
+    legend('Output x1 Histogram','Parameterized x1')
 
     
 end
@@ -372,12 +296,15 @@ for i=1:D.nR,
 end
 
 % 5.3 shift that the "all" A0 into the estimate window
-i1=find(DAll.t==D.t(1));
+i1=find(abs(DAll.t-D.t(1))<(D.t(2)-D.t(1))/2);
 AllObs.A0Shift=AllObs.dA(:,i1); %this is area at first estimation time > than time 0
 
 % 5.4 for future reference save the more restrictive
 jmp.A0min=max(allA0min+AllObs.A0Shift,estA0min); %this is in the "estimation" window
 jmp.nmin=.001; %temporary!
 
+% 5.5 set up prior A0 variable by shifting into estimation window
+Prior.meanA0=Prior.meanAllA0+AllObs.A0Shift;
+Prior.stdA0=Prior.stdAllA0; %not sure that's correct?
+
 return
->>>>>>> varnQbarPrior

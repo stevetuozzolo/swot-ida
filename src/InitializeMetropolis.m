@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-function [Delta,DeltaA,B,C,thetauA0,thetaun,thetauq,thetauQbar,R] = ...
-=======
 function [Delta,DeltaA,B,C,thetauA0,thetauna,thetaux1,thetauq,R] = ...
->>>>>>> varnQbarPrior
                InitializeMetropolis (D,C,P,R)
 
 Delta = CalcDelta(D.nR,D.nt,D.L);
@@ -22,15 +18,6 @@ C.thetax1=nan(D.nR,C.N);
 C.thetax1(:,1)=P.meanx1;
 thetaux1=C.thetax1(:,1);
 
-<<<<<<< HEAD
-C.thetaQbar=nan(1,C.N);
-C.thetaQbar(:,1)=P.meanQbar*ones(1,1);
-thetauQbar=C.thetaQbar(:,1);
-
-%Get Random numbers
-rng(R.Seed)
-R.z1=randn(1,C.N);  %for Qbar
-=======
 % C.thetaq=nan(D.nR*(D.nt-1),C.N);
 % C.thetaq(:,1)=P.meanq;
 thetauq=nan; 
@@ -43,7 +30,6 @@ thetauq=nan;
 rng(R.Seed)
 % R.z1=randn(1,C.N);  %spatially invariant increments... not good
 R.z1=randn(D.nR,C.N);  
->>>>>>> varnQbarPrior
 R.z2=randn(D.nR,C.N);
 R.z3=randn(D.nR,C.N);
 % R.z3=randn(D.nR*(D.nt-1),C.N);

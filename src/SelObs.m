@@ -3,7 +3,7 @@ function [D,Obs,AllObs,DAll,Truth]=SelObs(DAll,Obs,Exp,AllTruth)
 AllObs=Obs;
 
 for i=1:Exp.Est_nt,
-    iEst(i)=find(DAll.t==Exp.tUse(i));
+    iEst(i)=find(abs(DAll.t-Exp.tUse(i))<(1*Exp.tStep/2));
 end
 
 Obs.h=AllObs.h(:,iEst);

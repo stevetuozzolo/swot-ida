@@ -1,4 +1,4 @@
-function MakeFigs (D,Truth,Prior,C,E,Err,AllTruth,DAll)
+function MakeFigs (D,Truth,Prior,C,E,Err,AllTruth,DAll,AllObs)
 
 figure(1)
 % if C.Estimateq,
@@ -12,7 +12,7 @@ plot(C.thetaA0'); grid on;
 title('Baseflow cross-sectional area, m^2')
 subplot(n,1,2)
 plot(C.thetana'); grid on;
-title('Roughness coefficient parameter na')
+title('Roughness coefficient parameter n0')
 subplot(n,1,3)
 plot(C.thetax1'); grid on;
 title('Roughness coefficient parameter x1')
@@ -27,10 +27,15 @@ ylabel('Cross-sectional area, m^2')
 legend([h1; hp; h2;],'Estimate','Prior','True')
 
 figure(3)
-for i=1:D.nR,
+meanA0=Prior.meanA0;
+covA0=Prior.stdA0./meanA0;
+vA0=(covA0.*meanA0).^2;
+[muA0,sigmaA0] = logninvstat(meanA0,vA0);
+
+for i=1:D.nR,    
     subplot(1,D.nR,i)
     x=0:max(C.thetaA0(i,:));
-    y=normpdf(x,Prior.meanA0(i),Prior.stdA0(i));
+    y=lognpdf(x,muA0(i),sigmaA0(i));
     plot(x,y/max(y)*C.N/20,'r--','LineWidth',2); hold on;
     hist(C.thetaA0(i,C.Nburn+1:end),50); 
     set(gca,'FontSize',14)
@@ -41,7 +46,6 @@ for i=1:D.nR,
     ylabel('Frequency')
 end
 
-<<<<<<< HEAD
 figure(4)
 if isnan(Truth.n),
     Truth.n=nan(size(Truth.A0));
@@ -49,43 +53,38 @@ end
     
 for i=1:D.nR,
     subplot(1,D.nR,i)
-    x=linspace(0,max(C.thetan(i,:)),100);
-    y=normpdf(x,Prior.meann(i),Prior.stdn(i));
+    x=linspace(0,max(C.thetana(i,:)),100);
+    y=normpdf(x,Prior.meanna(i),Prior.stdna(i));
     plot(x,y/max(y)*C.N/20,'r--','LineWidth',2); hold on;
     
-    hist(C.thetan(i,C.Nburn+1:end),50); 
+    hist(C.thetana(i,C.Nburn+1:end),50); 
     plot(Truth.n(i)*ones(2,1),get(gca,'YLim'),'g-','LineWidth',2); 
     set(gca,'FontSize',14)
-    plot(E.nhat(i)*ones(2,1),get(gca,'YLim'),'k--','LineWidth',2); hold off;    
+    plot(E.nahat(i)*ones(2,1),get(gca,'YLim'),'k--','LineWidth',2); hold off;    
     title(['Reach ' num2str(i)])
-    xlabel('n, [-]')
+    xlabel('n0, [-]')
     ylabel('Frequency')    
 end
-=======
-% figure(4)
-% if isnan(Truth.n),
-%     Truth.n=nan(size(Truth.A0));
-% end
-%     
-% for i=1:D.nR,
-%     subplot(1,D.nR,i)
-%     x=linspace(0,max(C.thetan(i,:)),100);
-%     y=normpdf(x,Prior.meann(i),Prior.stdn(i));
-%     plot(x,y/max(y)*C.N/20,'r--','LineWidth',2); hold on;
-%     
-%     hist(C.thetan(i,C.Nburn+1:end),50); 
-%     plot(Truth.n(i)*ones(2,1),get(gca,'YLim'),'g-','LineWidth',2); 
-%     set(gca,'FontSize',14)
-%     plot(E.nhat(i)*ones(2,1),get(gca,'YLim'),'k--','LineWidth',2); hold off;    
-%     title(['Reach ' num2str(i)])
-%     xlabel('n, [-]')
-%     ylabel('Frequency')    
-% end
->>>>>>> varnQbarPrior
-
-Qbar=squeeze(mean(mean(C.thetaAllQ)));
 
 figure(5)
+for i=1:D.nR,
+    subplot(1,D.nR,i)
+    x=linspace(0,max(C.thetax1(i,:)),100);
+    y=normpdf(x,Prior.meanx1(i),Prior.stdx1(i));
+    plot(x,y/max(y)*C.N/20,'r--','LineWidth',2); hold on;
+    
+    hist(C.thetax1(i,C.Nburn+1:end),50);     
+    set(gca,'FontSize',14)
+    plot(E.x1hat(i)*ones(2,1),get(gca,'YLim'),'k--','LineWidth',2); hold off;    
+    title(['Reach ' num2str(i)])
+    xlabel('x1, [-]')
+    ylabel('Frequency')    
+end
+
+% Qbar=squeeze(mean(mean(C.thetaAllQ(:,:,C.Nburn+1:end) )));
+Qbar=squeeze(mean(mean(C.thetaAllQ(:,:,:) )));
+
+figure(6)
 plot(Qbar); grid on;
 set(gca,'FontSize',14)
 xlabel('Iteration')
@@ -96,7 +95,7 @@ plot([1 C.N],mean(mean(Truth.Q))*ones(2,1));
 hold off;
 
 
-figure(6)
+figure(7)
 h=plot(D.t,Truth.Q,D.t,E.QhatPostf','LineWidth',2); 
 set(h(1:D.nR),'Color','b');  set(h(D.nR+1:end),'Color','r');
 set(gca,'FontSize',14)
@@ -104,29 +103,59 @@ xlabel('Time, days')
 ylabel('Discharge, m^3/s')
 legend(h([1 end]),'True','MetroMan')
 
-figure(7)
+figure(8)
 plot(1:D.nR,Err.QRelErrPrior,'.-',1:D.nR,Err.QRelErrPost,'.-');
 xlabel('Reach'); ylabel('Relative error');
 legend('Prior','Posterior');
 
-figure(8)
+figure(9)
 plot(Qbar,C.LogLike,'o')
 set(gca,'FontSize',14)
 xlabel('Average discharge, m^3/s')
 ylabel('Log of likelihood')
 
 
-figure(9)
+figure(10)
 plot(DAll.t,mean(AllTruth.Q,1),DAll.t,mean(E.AllQ,1),DAll.t,mean(E.QhatAllPrior,1),'LineWidth',2)
 set(gca,'FontSize',14)
 ylabel('Discharge, m^3/s')
-<<<<<<< HEAD
-legend('True','Estimate')
-=======
 legend('True','Estimate','Prior')
->>>>>>> varnQbarPrior
 if DAll.t(1) > datenum(1900,0,0,0,0,0),
     datetick('x','mmm-dd-hh:MM','keepticks')
 end
+
+r=1;
+figure(11)
+subplot(121)
+loglog(E.AllQ(r,:)',AllObs.w(r,:)','+');
+xlabel('Estimated Discharge, m^3/s')
+ylabel('Width, m')
+title(['AHG for Reach #' num2str(r)])
+
+subplot(122)
+plot(AllObs.h(r,:)',AllObs.w(r,:)','+');
+xlabel('Height, m')
+ylabel('Width, m')
+title(['Stage-area for Reach #' num2str(r)])
+
+iPos=AllObs.S>1E-5; %should make this a variable to be passed in... and should get the "true" slopes added to input file
+nTrue=nan(size(AllTruth.Q));
+ATrue=AllTruth.A0'*ones(1,DAll.nt)+AllTruth.dA;
+nTrue(iPos)=1./AllTruth.Q(iPos).*ATrue(iPos).^(5/3).*AllTruth.W(iPos).^(-2/3).*(AllObs.S(iPos)).^.5;
+
+figure(15)
+r=1:DAll.nR;
+subplot(121),
+plot(E.AllQ(r,:)',E.nhatAll(r,:)','o')
+set(gca,'FontSize',14)
+xlabel('Estimated Discharge, m^3/s')
+ylabel('Estimated n, [-]');
+subplot(122)
+plot(AllTruth.Q(r,:)',nTrue(r,:)','o')
+set(gca,'FontSize',14)
+xlabel('True Discharge, m^3/s')
+ylabel('"True" n, [-]');
+subplot(122)
+
 
 return
