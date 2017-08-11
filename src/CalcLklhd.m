@@ -15,7 +15,8 @@ A0v=reshape((A0*ones(1,D.nt))',D.nR*D.nt,1);
 
 c1=0.85;
 for r=1:D.nR,
-    nhat(r,:) = calcnhat(Obs.w(r,:),Obs.h(r,:),AllObs.hmin(r),Prior.Wa(r),Prior.Ha(r),c1,x1(r),na(r),BjerklienOpt);
+    nhat(r,:) = calcnhat(Obs.w(r,:),Obs.h(r,:),AllObs.hmin(r),A0v(r)+Obs.dAv(r,:),...
+        Prior.Wa(r),Prior.Ha(r),c1,x1(r),na(r),BjerklienOpt);
 end
 
 nv=reshape(nhat',D.nR*D.nt,1);
