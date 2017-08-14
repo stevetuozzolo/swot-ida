@@ -27,8 +27,14 @@ AllObs.S(AllObs.S<Smin)=Smin;
 AllObs.hmin=min(AllObs.h,[],2);
 
 if ReRunPrior,
-    [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,DAll,Obs,D,ShowFigs,BjerklienOpt); 
+    [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,DAll,Obs,D,ShowFigs,BjerklienOpt);
+    if isstruct(Prior)
     save([ RunDir '/Prior.mat'],'Prior','jmp','AllObs');
+    else
+        Err=[]; Estimate=[];
+        save([RunDir '/RunData.mat'])
+        return;
+    end
 else    
     load([ RunDir '/Prior.mat'],'Prior','jmp','AllObs');
 end

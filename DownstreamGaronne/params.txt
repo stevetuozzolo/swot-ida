@@ -1,0 +1,12 @@
+Chain length
+10000
+Burn in
+2000
+Random Number Seed
+9
+Initial and final time (indices) to use in estimate... 
+160 190
+Prior mean on mean discharge [m3/s]
+528.5
+Prior coefficient of variation on mean flow [fraction]
+0.5

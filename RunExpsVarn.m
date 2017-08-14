@@ -1,8 +1,8 @@
-clear all
+%clear all
 
 addpath ./src
 
-ShowFigs=true;
+ShowFigs=false;
 RunBjerklie=false;
 ReRunPrior=true; %need to re-run every time jump params change! just use for debugging etc.
 RunMetroMan=true;

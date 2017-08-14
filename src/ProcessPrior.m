@@ -32,14 +32,14 @@ for r=1:DAll.nR,
         meanna(r)=0.22*DB.Sa(r)^0.18; %this is "na" in Bjerklie's notation
     elseif BjerklienOpt == 3 || 4,
         c1=nan;
-        meanx1(r)=-0.1; %these values computed across 10 rivers, all reaches
+        meanx1(r)=-0.5; %these values computed across 10 rivers, all reaches
         meanna(r)=0.04;
     end
 end
 
 %need to move these to be inputs
 covna=.05;
-covx1=.25;
+covx1=1;
 
 %% 3 initial probability calculations
 %n calcs
@@ -218,7 +218,8 @@ if min(na1)/N < 0.15 || min(na2)/N < 0.15 || min(na3)/N < 0.15 || max(na1)/N > 0
     disp(['Acceptance for na: ' num2str(na2/N*100) '%'])
     disp(['Acceptance for x1: ' num2str(na3/N*100) '%'])
 
-    clear Prior
+    %clear Prior
+    Prior=0; jmp=[]; AllObs=[];
     return
 end
 
