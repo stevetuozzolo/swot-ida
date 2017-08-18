@@ -1,6 +1,6 @@
 % this script runs a single experiment, taking Run Directory as input
 
-function RunExpVarn(RunDir,ShowFigs,ReRunPrior,Smin,BjerklienOpt)
+function RunExpVarn(RunDir,ShowFigs,ReRunPrior,Smin)
 
 % RunDir='.';
 
@@ -27,7 +27,7 @@ AllObs.S(AllObs.S<Smin)=Smin;
 AllObs.hmin=min(AllObs.h,[],2);
 
 if ReRunPrior,
-    [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,DAll,Obs,D,ShowFigs,BjerklienOpt); 
+    [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,DAll,Obs,D,ShowFigs,Exp.BjerklienOpt); 
     save([ RunDir '/Prior.mat'],'Prior','jmp','AllObs');
 else    
     load([ RunDir '/Prior.mat'],'Prior','jmp','AllObs');
@@ -35,9 +35,9 @@ end
 
 [Obs,Prior] = GetCovMats(D,Obs,Prior);
 
-Chain=MetropolisCalculations(Prior,D,Obs,jmp,Chain,R,DAll,AllObs,BjerklienOpt);
+Chain=MetropolisCalculations(Prior,D,Obs,jmp,Chain,R,DAll,AllObs,Exp.BjerklienOpt);
 
-[Estimate,Chain]=CalculateEstimates (Chain,D,Obs,Prior,DAll,AllObs,BjerklienOpt);
+[Estimate,Chain]=CalculateEstimates (Chain,D,Obs,Prior,DAll,AllObs,Exp.BjerklienOpt);
 
 [Estimate] = FilterEstimate(Estimate,Chain,D,Obs);
 

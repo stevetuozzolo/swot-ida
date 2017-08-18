@@ -8,7 +8,7 @@ jmp.stdx1=0.1.*mean(thetaux1);
 
 jmp.target1=0.25; %A0 is a vector
 jmp.target2=0.25; %na is a vector
-jmp.target3=0.25; %na is a vector
+jmp.target3=0.25; %x1 is a vector
 
 % log-normal probabilty calculations
 meanA0=Prior.meanA0;
