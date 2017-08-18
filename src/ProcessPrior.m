@@ -30,16 +30,21 @@ for r=1:DAll.nR,
         c1=0.85;
         meanx1(r)=2.257+1.308*log10(DB.chiH(r))+0.99*log10(DB.chiW(r))+0.435*log10(DB.Sa(r));
         meanna(r)=0.22*DB.Sa(r)^0.18; %this is "na" in Bjerklie's notation
-    elseif BjerklienOpt == 3 || 4,
+    elseif BjerklienOpt == 3,
         c1=nan;
         meanx1(r)=-0.1; %these values computed across 10 rivers, all reaches
         meanna(r)=0.04;
+        covx1=.25;
+        covna=.05;
+    elseif BjerklienOpt == 4,
+        c1=nan;
+        meanx1(r)=-0.25;
+        covx1=1;
+        meanna(r)=0.04;
+        covna=.05;
     end
 end
 
-%need to move these to be inputs
-covna=.05;
-covx1=.25;
 
 %% 3 initial probability calculations
 %n calcs
