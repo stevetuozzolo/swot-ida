@@ -30,9 +30,9 @@ for r=1:DAll.nR,
         c1=0.85;
         meanx1(r)=2.257+1.308*log10(DB.chiH(r))+0.99*log10(DB.chiW(r))+0.435*log10(DB.Sa(r));
         meanna(r)=0.22*DB.Sa(r)^0.18; %this is "na" in Bjerklie's notation
-    elseif BjerklienOpt == 3,
+    elseif BjerklienOpt == 3 || 4,
         c1=nan;
-        meanx1(r)=-0.09; %these values computed across 10 rivers, all reaches
+        meanx1(r)=-0.1; %these values computed across 10 rivers, all reaches
         meanna(r)=0.04;
     end
 end
@@ -108,7 +108,8 @@ for j=1:DAll.nR,
     pu3=lognpdf(-x1u,mux1(j),sigmax1(j));     
     
 %     nhatu=c1.*( AllObs.w(j,:).*AllObs.h(j,:)./Prior.Wa(j)./Prior.Ha(j) ).^x1u .* nau; %updated if either nau or x1u change
-    nhatu = calcnhat(AllObs.w(j,:),AllObs.h(j,:),AllObs.hmin(j),Prior.Wa(j),Prior.Ha(j),c1,x1u,nau,BjerklienOpt);
+    nhatu = calcnhat(AllObs.w(j,:),AllObs.h(j,:),AllObs.hmin(j),A0u+AllObs.dA(j,:), ...
+        Prior.Wa(j),Prior.Ha(j),c1,x1u,nau,BjerklienOpt);
     
     Qu=mean( 1./nhatu.*(A0u+AllObs.dA(j,:)).^(5/3).*AllObs.w(j,:).^(-2/3).*sqrt(AllObs.S(j,:)) );
     
@@ -155,7 +156,8 @@ for j=1:DAll.nR,
         end
         
 %         nhatv=c1.*( AllObs.w(j,:).*AllObs.h(j,:)./Prior.Wa(j)./Prior.Ha(j) ).^x1u .* nav; %updated if either nau or x1u change
-        nhatv = calcnhat(AllObs.w(j,:),AllObs.h(j,:),AllObs.hmin(j),Prior.Wa(j),Prior.Ha(j),c1,x1u,nav,BjerklienOpt);
+        nhatv = calcnhat(AllObs.w(j,:),AllObs.h(j,:),AllObs.hmin(j),A0u+AllObs.dA(j,:), ...
+            Prior.Wa(j),Prior.Ha(j),c1,x1u,nav,BjerklienOpt);
 
         Qv = mean( 1./nhatv.*(A0u+AllObs.dA(j,:)).^(5/3).*AllObs.w(j,:).^(-2/3).*sqrt(AllObs.S(j,:)) );
         fv=lognpdf(Qv,muQbar,sigmaQbar);
@@ -179,7 +181,8 @@ for j=1:DAll.nR,
         end
         
 %         nhatv=c1.*( AllObs.w(j,:).*AllObs.h(j,:)./Prior.Wa(j)./Prior.Ha(j) ).^x1v .* nau; %updated if either nau or x1u change
-        nhatv = calcnhat(AllObs.w(j,:),AllObs.h(j,:),AllObs.hmin(j),Prior.Wa(j),Prior.Ha(j),c1,x1v,nau,BjerklienOpt);
+        nhatv = calcnhat(AllObs.w(j,:),AllObs.h(j,:),AllObs.hmin(j),A0u+AllObs.dA(j,:),...
+        Prior.Wa(j),Prior.Ha(j),c1,x1v,nau,BjerklienOpt);
 
         Qv = mean( 1./nhatv.*(A0u+AllObs.dA(j,:)).^(5/3).*AllObs.w(j,:).^(-2/3).*sqrt(AllObs.S(j,:)) );
         fv=lognpdf(Qv,muQbar,sigmaQbar);
@@ -230,7 +233,8 @@ Prior.meanx1=mean(thetax1(:,iUse),2);  %should check these parameters actually f
 Prior.stdx1=std(thetax1(:,iUse),[],2);
 
 for r=1:DAll.nR,
-    nhat = calcnhat(AllObs.w(r,:),AllObs.h(r,:),AllObs.hmin(r),Prior.Wa(r),Prior.Ha(r),c1,Prior.meanx1(r),Prior.meanna(r),BjerklienOpt);
+    nhat = calcnhat(AllObs.w(r,:),AllObs.h(r,:),AllObs.hmin(r),Prior.meanAllA0(r)+AllObs.dA(r,:), ...
+        Prior.Wa(r),Prior.Ha(r),c1,Prior.meanx1(r),Prior.meanna(r),BjerklienOpt);
     QPrior(r,:)=1./nhat.*(Prior.meanAllA0(r)+AllObs.dA(r,:)).^(5/3).*AllObs.w(r,:).^(-2/3).*sqrt(AllObs.S(r,:)) ;
 end
 
