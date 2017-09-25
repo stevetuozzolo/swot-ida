@@ -22,7 +22,7 @@ Obs.wv=reshape(Obs.w',D.nR*D.nt,1);
 Obs.Sv=reshape(Obs.S',D.nR*D.nt,1);
 
 %calculate new dt -- this is copied/modified from ReadObs.m
-D.dt=reshape( (diff(D.t)'.*86400*ones(1,D.nR)),D.nR*(D.nt-1),1);
+D.dt=reshape( (diff(D.t(iEst))'.*86400*ones(1,D.nR)),D.nR*(D.nt-1),1);
 
 Truth=AllTruth;
 Truth.Q=AllTruth.Q(:,iEst);
