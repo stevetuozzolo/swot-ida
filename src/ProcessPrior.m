@@ -13,6 +13,9 @@ for i=1:DAll.nR,
     end
 end
 
+Obs.hmin=min(Obs.h,[],2);
+AllObs.hmin=min(AllObs.h,[],2);
+
 %% 2 Bjerklie calcs
 
 Prior.Wa=mean(AllObs.w,2);
