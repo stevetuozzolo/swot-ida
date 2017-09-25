@@ -3,7 +3,7 @@ function [D,Obs,AllObs,DAll,Truth]=SelObs(DAll,Obs,Exp,AllTruth)
 AllObs=Obs;
 
 for i=1:Exp.Est_nt,
-    iEst(i)=find(abs(DAll.t-Exp.tUse(i))<(1*Exp.tStep/2));
+    iEst(i)=Exp.tUse(i);%find(abs(DAll.t-Exp.tUse(i))<(1*Exp.tStep/2));
 end
 
 Obs.h=AllObs.h(:,iEst);
@@ -14,7 +14,7 @@ Obs.w=AllObs.w(:,iEst);
 D=DAll;
 
 D.nt=Exp.Est_nt;
-D.t=Exp.tUse;
+D.t=DAll.t;%Exp.tUse;
 
 %reshape new data -- this is copied/modified from ReadObs.m
 Obs.hv=reshape(Obs.h',D.nR*D.nt,1);

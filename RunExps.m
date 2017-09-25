@@ -1,6 +1,7 @@
 clear all
 
-uselib('SWOTQAlg')
+%uselib('SWOTQAlg')
+addpath src
 
 ShowFigs=true;
 RunBjerklie=false;
