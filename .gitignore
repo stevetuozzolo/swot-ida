@@ -1,5 +1,6 @@
 
 *.mat
+<<<<<<< HEAD
 RunFile.txt
 AirSWOT/params.txt
 src/ProcessPrior.m
@@ -9,3 +10,10 @@ AirSWOT/params.txt
 *.asv
 src/ReadParams.asv
 src/ProcessPrior.m
+=======
+*.txt
+>>>>>>> c3c9985f7d0632840da0da8a2bc5bdb0a5619c36
+*.txt
+AirSWOT/truth.txt
+AirSWOT/SWOTobs.txt
+AirSWOT/params.txt
