@@ -3,3 +3,9 @@
 RunFile.txt
 AirSWOT/params.txt
 src/ProcessPrior.m
+AirSWOT/params.txt
+AirSWOT/params.txt
+AirSWOT/params.txt
+*.asv
+src/ReadParams.asv
+src/ProcessPrior.m
