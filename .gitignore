@@ -1,2 +1,5 @@
 
 *.mat
+RunFile.txt
+AirSWOT/params.txt
+src/ProcessPrior.m
