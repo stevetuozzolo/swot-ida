@@ -7,9 +7,9 @@ function [Prior,jmp,AllObs]=ProcessPrior(Prior,AllObs,DAll,Obs,D,ShowFigs,nOpt)
 allA0min=nan(DAll.nR,1);
 for i=1:DAll.nR,
     if min(AllObs.dA(i,:))>=0
-        allA0min(i,1)=1e-3;
+        allA0min(i,1)=7.2*(Prior.meanQbar^0.5); %based on M&T, eqn 15
     else
-        allA0min(i,1)=-min(AllObs.dA(i,:))+1e-3;
+        allA0min(i,1)=-min(AllObs.dA(i,:))+7.2*(Prior.meanQbar^0.5);
     end
 end
 
@@ -313,7 +313,7 @@ for i=1:D.nR,
 end
 
 % 5.3 shift that the "all" A0 into the estimate window
-i1=find(abs(DAll.t-D.t(1))<(D.t(2)-D.t(1))/2);
+i1=D.t(1); %find(abs(DAll.t-D.t(1))<(D.t(2)-D.t(1))/2); %this should always work, even on Pepsi Data...
 AllObs.A0Shift=AllObs.dA(:,i1); %this is area at first estimation time > than time 0
 
 % 5.4 for future reference save the more restrictive

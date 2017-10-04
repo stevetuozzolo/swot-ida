@@ -1,7 +1,9 @@
 function [D,Obs,AllObs,DAll,Truth]=SelObs(DAll,Obs,Exp,AllTruth)
 
 AllObs=Obs;
-
+Exp.tUse(Exp.tUse>size(Obs.h,2))=[];
+Exp.tUse=reshape(Exp.tUse,[1 length(Exp.tUse)]);
+Exp.Est_nt=length(Exp.tUse);
 for i=1:Exp.Est_nt,
     iEst(i)=Exp.tUse(i);%find(abs(DAll.t-Exp.tUse(i))<(1*Exp.tStep/2));
 end
@@ -14,15 +16,15 @@ Obs.w=AllObs.w(:,iEst);
 D=DAll;
 
 D.nt=Exp.Est_nt;
-D.t=DAll.t;%Exp.tUse;
-
+%D.t=DAll.t;%Exp.tUse;
+D.t=D.t(Exp.tUse);
 %reshape new data -- this is copied/modified from ReadObs.m
 Obs.hv=reshape(Obs.h',D.nR*D.nt,1);
 Obs.wv=reshape(Obs.w',D.nR*D.nt,1);
 Obs.Sv=reshape(Obs.S',D.nR*D.nt,1);
 
 %calculate new dt -- this is copied/modified from ReadObs.m
-D.dt=reshape( (diff(D.t(iEst))'.*86400*ones(1,D.nR)),D.nR*(D.nt-1),1);
+D.dt=reshape( (diff(D.t)'.*86400*ones(1,D.nR)),D.nR*(D.nt-1),1);
 
 Truth=AllTruth;
 Truth.Q=AllTruth.Q(:,iEst);
