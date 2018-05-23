@@ -5,9 +5,7 @@ Burn in
 Random Number Seed
 9
 Number of times to use in estimate
-31
-Steps to use in estimate
-10    40
+10 40
 Prior mean on mean discharge [m3/s]
 377
 Prior coefficient of variation on mean flow [fraction... set to 0.5 for typical application ]

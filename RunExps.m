@@ -1,8 +1,6 @@
 clear all
 
-%uselib('SWOTQAlg')
-addpath src
-
+uselib('SWOTQAlg')
 ShowFigs=true;
 RunBjerklie=false;
 RunMetroMan=true;
