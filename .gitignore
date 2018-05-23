@@ -1,6 +1,7 @@
 
 *.mat
 <<<<<<< HEAD
+<<<<<<< HEAD
 RunFile.txt
 AirSWOT/params.txt
 src/ProcessPrior.m
@@ -17,3 +18,5 @@ src/ProcessPrior.m
 AirSWOT/truth.txt
 AirSWOT/SWOTobs.txt
 AirSWOT/params.txt
+=======
+>>>>>>> parent of e02346b... ignore params...
