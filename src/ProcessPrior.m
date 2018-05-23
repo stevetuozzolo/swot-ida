@@ -70,7 +70,7 @@ v=(Prior.covQbar*Prior.meanQbar)^2;
 
 
 %% chain setup
-ste
+
 N=1E4; %chain length
 
 A0u=0.27*(Prior.meanQbar^.39)*7.2*(Prior.meanQbar^0.5); %Moody & Troutman A0
