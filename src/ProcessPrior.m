@@ -73,8 +73,8 @@ v=(Prior.covQbar*Prior.meanQbar)^2;
 
 N=1E4; %chain length
 
-A0u=0.27*(Prior.meanQbar^.39)*7.2*(Prior.meanQbar^0.5); %Moody & Troutman A0
-A0u(A0u < allA0min,1) = allA0min(A0u < allA0min)' + 1; %Make sure that no dA will push A negative. Adjust A0 to maximum negative dA + 1 if necessary.
+A0u=ones(DAll.nR,1)*0.27*(Prior.meanQbar^.39)*7.2*(Prior.meanQbar^0.5); %Moody & Troutman A0
+A0u(A0u < allA0min,1) = allA0min(A0u < allA0min,1) + 1; %Make sure that no dA will push A negative. Adjust A0 to maximum negative dA + 1 if necessary.
 
 nau=meanna; %ok as long as all r
 x1u=meanx1;
